@@ -51,18 +51,22 @@
 
 <script>
 import { ref } from 'vue';
+import authorizationAPI from './../apis/authorization';
 export default {
   setup() {
     const email = ref('');
     const password = ref('');
 
     function handleSubmit() {
-      const data = JSON.stringify({
-        email: this.email,
-        password: this.password,
-      });
-
-      console.log('data', data);
+      authorizationAPI
+        .signIn({
+          email: this.email,
+          password: this.password,
+        })
+        .then((response) => {
+          const { data } = response;
+          localStorage.setItem('token', data.token);
+        });
     }
 
     return { email, password, handleSubmit };

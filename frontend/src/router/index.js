@@ -19,6 +19,11 @@ const routes = [
     name: 'not-found',
     component: NotFound,
   },
+  {
+    path: '/',
+    name: 'root',
+    redirect: '/signin',
+  },
 ];
 
 const router = createRouter({
