@@ -63,7 +63,7 @@ export default {
     const password = ref('');
     const isProcessing = ref(false);
 
-    function handleSubmit() {
+    async function handleSubmit() {
       if (!this.email || !this.password) {
         Toast.fire({
           icon: 'warning',
@@ -74,29 +74,27 @@ export default {
 
       this.isProcessing = true;
 
-      authorizationAPI
-        .signIn({
+      try {
+        const response = await authorizationAPI.signIn({
           email: this.email,
           password: this.password,
-        })
-        .then((response) => {
-          const { data } = response;
-
-          if (data.status === 'error') {
-            throw new Error(data.message);
-          }
-
-          localStorage.setItem('token', data.token);
-        })
-        .catch((error) => {
-          this.password = '';
-          Toast.fire({
-            icon: 'warning',
-            title: '請確認您輸入了正確的帳號密碼',
-          });
-          this.isProcessing = false;
-          console.log('error', error);
         });
+        const { data } = response;
+
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        }
+
+        localStorage.setItem('token', data.token);
+      } catch (error) {
+        this.password = '';
+        Toast.fire({
+          icon: 'warning',
+          title: '請確認您輸入了正確的帳號密碼',
+        });
+        this.isProcessing = false;
+        console.log('error', error);
+      }
     }
 
     return { email, password, handleSubmit, isProcessing };
