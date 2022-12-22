@@ -34,7 +34,11 @@
         />
       </div>
 
-      <button class="btn btn-primary btn-block mb-3" type="submit">
+      <button
+        class="btn btn-primary btn-block mb-3"
+        type="submit"
+        :disabled="isProcessing"
+      >
         Submit
       </button>
 
@@ -51,21 +55,49 @@
 
 <script>
 import { ref } from 'vue';
+import authorizationAPI from './../apis/authorization';
+import { Toast } from './../utils/helpers';
 export default {
   setup() {
     const email = ref('');
     const password = ref('');
+    const isProcessing = ref(false);
 
-    function handleSubmit() {
-      const data = JSON.stringify({
-        email: this.email,
-        password: this.password,
-      });
+    async function handleSubmit() {
+      if (!this.email || !this.password) {
+        Toast.fire({
+          icon: 'warning',
+          title: '請填寫email及密碼',
+        });
+        return;
+      }
 
-      console.log('data', data);
+      this.isProcessing = true;
+
+      try {
+        const response = await authorizationAPI.signIn({
+          email: this.email,
+          password: this.password,
+        });
+        const { data } = response;
+
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        }
+
+        localStorage.setItem('token', data.token);
+      } catch (error) {
+        this.password = '';
+        Toast.fire({
+          icon: 'warning',
+          title: '請確認您輸入了正確的帳號密碼',
+        });
+        this.isProcessing = false;
+        console.log('error', error);
+      }
     }
 
-    return { email, password, handleSubmit };
+    return { email, password, handleSubmit, isProcessing };
   },
 };
 </script>
