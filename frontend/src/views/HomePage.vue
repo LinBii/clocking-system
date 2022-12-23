@@ -45,6 +45,12 @@ export default {
 
         clockedIn.value = true;
       }
+
+      if (elapsedTime.value >= 28800000) {
+        console.log('Elapsed time is more than 8 hours');
+      } else {
+        console.log('Elapsed time is less than 8 hours');
+      }
     }
 
     // Update currentTime ref every second
