@@ -7,6 +7,7 @@
     {{ clockInTime }}
     {{ clockOutTime }}
     {{ elapsedTime }}
+    <p v-if="absent">您今天的出勤狀況為缺勤！</p>
   </div>
 </template>
 
@@ -29,6 +30,10 @@ export default {
       return null;
     });
 
+    const absent = computed(() => {
+      return elapsedTime.value < 28800000;
+    });
+
     function clockIn() {
       clockInTime.value = new Date();
 
@@ -44,12 +49,6 @@ export default {
         clockOutTime.value = new Date();
 
         clockedIn.value = true;
-      }
-
-      if (elapsedTime.value >= 28800000) {
-        console.log('Elapsed time is more than 8 hours');
-      } else {
-        console.log('Elapsed time is less than 8 hours');
       }
     }
 
@@ -81,6 +80,7 @@ export default {
       clockedIn,
       clockIn,
       clockOut,
+      absent,
     };
   },
 };
