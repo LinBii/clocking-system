@@ -6,6 +6,7 @@
     <button :disabled="!clockedIn" @click="clockOut">打卡下班</button>
     {{ clockInTime }}
     {{ clockOutTime }}
+    {{ elapsedTime }}
   </div>
 </template>
 
@@ -54,7 +55,7 @@ export default {
       const dayChangeTime = new Date(
         currentTime.value.getFullYear(),
         currentTime.value.getMonth(),
-        currentTime.value.getDate(),
+        currentTime.value.getDate() + 1,
         5,
         0,
         0
