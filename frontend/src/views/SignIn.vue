@@ -55,10 +55,13 @@
 
 <script>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import authorizationAPI from './../apis/authorization';
 import { Toast } from './../utils/helpers';
+
 export default {
   setup() {
+    const router = useRouter();
     const email = ref('');
     const password = ref('');
     const isProcessing = ref(false);
@@ -86,6 +89,13 @@ export default {
         }
 
         localStorage.setItem('token', data.token);
+
+        router.push('/home');
+
+        Toast.fire({
+          icon: 'success',
+          title: '登入成功！',
+        });
       } catch (error) {
         this.password = '';
         Toast.fire({
