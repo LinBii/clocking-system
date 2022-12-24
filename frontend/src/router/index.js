@@ -3,6 +3,7 @@ import NotFound from '../views/NotFound.vue';
 import SignIn from '../views/SignIn.vue';
 import SignUp from '../views/SignUp.vue';
 import HomePage from '../views/HomePage.vue';
+import store from './../store';
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  store.dispatch('fetchCurrentUser');
+  next();
 });
 
 export default router;

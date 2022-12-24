@@ -10,6 +10,8 @@ const { authenticated } = require('../middleware/api-auth');
 
 const { apiErrorHandler } = require('../middleware/error-handler');
 
+router.get('/get_current_user', authenticated, userController.getCurrentUser);
+
 router.get('/', authenticated, home);
 
 router.post(

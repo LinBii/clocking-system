@@ -67,6 +67,15 @@ const userController = {
         next(err);
       });
   },
+  getCurrentUser: (req, res) => {
+    const { id, name, email, role } = req.user;
+    res.json({
+      id,
+      name,
+      email,
+      role,
+    });
+  },
 };
 
 module.exports = userController;

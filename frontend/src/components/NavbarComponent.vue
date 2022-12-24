@@ -22,10 +22,10 @@
               >管理員後台</router-link
             >
           </li>
-          <template v-if="isAuthenticaed">
+          <template v-if="isAuthenticated">
             <li class="nav-item">
               <router-link to="#" class="nav-link text-white mr-3"
-                >使用者 您好</router-link
+                >{{ currentUser.name || '使用者' }} 您好</router-link
               >
             </li>
             <li class="nav-item">
@@ -56,11 +56,8 @@
 import { mapState } from 'vuex';
 
 export default {
-  setup() {
-    const computed = mapState(['currentUser', 'isAuthenticaed']);
-    return {
-      ...computed,
-    };
+  computed: {
+    ...mapState(['currentUser', 'isAuthenticated']),
   },
 };
 </script>

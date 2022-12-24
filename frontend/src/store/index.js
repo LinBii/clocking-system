@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import usersAPI from '../apis/users.js';
 
 export default createStore({
   state: {
@@ -20,6 +21,27 @@ export default createStore({
       state.isAuthenticated = true;
     },
   },
-  actions: {},
+  actions: {
+    async fetchCurrentUser({ commit }) {
+      try {
+        const { data } = await usersAPI.getCurrentUser();
+
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        }
+
+        const { id, name, email, role } = data;
+
+        commit('setCurrentUser', {
+          id,
+          name,
+          email,
+          role,
+        });
+      } catch (error) {
+        console.error(error.message);
+      }
+    },
+  },
   modules: {},
 });
