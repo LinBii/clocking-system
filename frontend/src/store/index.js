@@ -10,6 +10,7 @@ export default createStore({
       isAdmin: false,
     },
     isAuthenticated: false,
+    token: '',
   },
   getters: {},
   mutations: {
@@ -19,6 +20,13 @@ export default createStore({
         ...currentUser,
       };
       state.isAuthenticated = true;
+      state.token = localStorage.getItem('token');
+    },
+    revokeAuthentication(state) {
+      state.currentUser = {};
+      state.isAuthenticated = false;
+      state.token = '';
+      localStorage.removeItem('token');
     },
   },
   actions: {
@@ -40,6 +48,8 @@ export default createStore({
         });
       } catch (error) {
         console.error(error.message);
+        commit('revokeAuthentication');
+        return false;
       }
     },
   },

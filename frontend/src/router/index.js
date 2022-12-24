@@ -38,8 +38,27 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  store.dispatch('fetchCurrentUser');
+router.beforeEach(async (to, from, next) => {
+  const token = localStorage.getItem('token');
+  const tokenInStore = store.state.token;
+
+  let isAuthenticated = store.state.isAuthenticated;
+
+  if (token && token !== tokenInStore) {
+    isAuthenticated = await store.dispatch('fetchCurrentUser');
+  }
+
+  const pathsWithoutAuthentication = ['sign-in', 'sign-up'];
+
+  if (!isAuthenticated && !pathsWithoutAuthentication.includes(to.name)) {
+    next('/signin');
+    return;
+  }
+
+  if (isAuthenticated && pathsWithoutAuthentication.includes(to.name)) {
+    next('/home');
+    return;
+  }
   next();
 });
 
