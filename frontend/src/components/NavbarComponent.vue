@@ -56,23 +56,27 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { computed } from 'vue';
+import { mapState, useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
 
 export default {
-  computed: {
-    ...mapState(['currentUser', 'isAuthenticated']),
-  },
   setup() {
     const router = useRouter();
     const store = useStore();
+    const storeState = mapState(['currentUser', 'isAuthenticated']);
+    const resultStoreState = {};
+    Object.keys(storeState).map((item) => {
+      const resFuc = storeState[item];
+      resultStoreState[item] = computed(resFuc.bind({ $store: store }));
+    });
+    const { currentUser, isAuthenticated } = { ...resultStoreState };
 
     function logout() {
       store.commit('revokeAuthentication');
       router.push('/signin');
     }
-    return { logout };
+    return { logout, currentUser, isAuthenticated };
   },
 };
 </script>
