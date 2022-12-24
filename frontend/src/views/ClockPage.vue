@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container py-5">
     <h1>歡迎來到PUNCHIN！</h1>
     <p>現在時間： {{ currentTime }}</p>
     <button :disabled="clockedIn" @click="clockIn">打卡上班</button>
