@@ -7,7 +7,8 @@
     {{ clockInTime }}
     {{ clockOutTime }}
     {{ elapsedTime }}
-    <p v-if="absent">您今天的出勤狀況為缺勤！</p>
+    <p v-if="!clockedIn">您今天還沒打卡！</p>
+    <p v-if="clockedIn && absent">您今天的出勤狀況為缺勤！</p>
   </div>
 </template>
 

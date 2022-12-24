@@ -35,22 +35,37 @@ const userController = {
       .catch((err) => next(err));
   },
   signIn: (req, res, next) => {
-    try {
-      const userData = req.user.toJSON();
-      delete userData.password;
-      const token = jwt.sign(userData, process.env.JWT_SECRET, {
-        expiresIn: '30d',
-      });
-      res.json({
-        status: 'success',
-        data: {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res.json({ status: 'error', message: '請確實填寫欄位！' });
+
+    User.findOne({ where: { email } })
+      .then((user) => {
+        if (!user)
+          return res
+            .status(401)
+            .json({ status: 'error', message: '使用者不存在！' });
+        if (!bcrypt.compareSync(password, user.password))
+          return res
+            .status(401)
+            .json({ status: 'error', message: '密碼錯誤！' });
+        const payload = { id: user.id };
+        const token = jwt.sign(payload, process.env.JWT_SECRET);
+        return res.json({
+          status: 'success',
+          message: 'ok',
           token,
-          user: userData,
-        },
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          },
+        });
+      })
+      .catch((err) => {
+        next(err);
       });
-    } catch (err) {
-      next(err);
-    }
   },
 };
 

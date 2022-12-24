@@ -22,21 +22,23 @@
               >管理員後台</router-link
             >
           </li>
-          <li class="nav-item">
-            <router-link to="#" class="nav-link text-white mr-3"
-              >使用者 您好</router-link
-            >
-          </li>
-          <li class="nav-item">
-            <router-link to="#" class="nav-link text-white mr-3"
-              >QR code打卡</router-link
-            >
-          </li>
-          <li class="nav-item">
-            <router-link to="#" class="nav-link text-white mr-3"
-              >GPS 打卡</router-link
-            >
-          </li>
+          <template v-if="isAuthenticaed">
+            <li class="nav-item">
+              <router-link to="#" class="nav-link text-white mr-3"
+                >使用者 您好</router-link
+              >
+            </li>
+            <li class="nav-item">
+              <router-link to="#" class="nav-link text-white mr-3"
+                >QR code打卡</router-link
+              >
+            </li>
+            <li class="nav-item">
+              <router-link to="#" class="nav-link text-white mr-3"
+                >GPS 打卡</router-link
+              >
+            </li>
+          </template>
         </ul>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
@@ -49,3 +51,16 @@
     </div>
   </nav>
 </template>
+
+<script>
+import { mapState } from 'vuex';
+
+export default {
+  setup() {
+    const computed = mapState(['currentUser', 'isAuthenticaed']);
+    return {
+      ...computed,
+    };
+  },
+};
+</script>
