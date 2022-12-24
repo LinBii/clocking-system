@@ -3,6 +3,7 @@ import NotFound from '../views/NotFound.vue';
 import SignIn from '../views/SignIn.vue';
 import SignUp from '../views/SignUp.vue';
 import ClockPage from '../views/ClockPage.vue';
+import UserEdit from '../views/UserEdit.vue';
 import store from './../store';
 
 const routes = [
@@ -20,6 +21,11 @@ const routes = [
     path: '/clocking',
     name: 'clocking',
     component: ClockPage,
+  },
+  {
+    path: '/users/:id/edit',
+    name: 'user-edit',
+    component: UserEdit,
   },
   {
     path: '/:pathMatch(.*)*',
@@ -56,7 +62,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (isAuthenticated && pathsWithoutAuthentication.includes(to.name)) {
-    next('/home');
+    next('/clocking');
     return;
   }
   next();
