@@ -61,18 +61,16 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
 export default {
-  computed: {
-    ...mapState(['currentUser', 'isAuthenticated']),
-  },
   setup() {
     const router = useRouter();
     const store = useStore();
+    const computed = mapState(['currentUser', 'isAuthenticated']);
 
     function logout() {
       store.commit('revokeAuthentication');
       router.push('/signin');
     }
-    return { logout };
+    return { logout, ...computed };
   },
 };
 </script>
