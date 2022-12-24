@@ -93,7 +93,7 @@ export default {
 
         localStorage.setItem('token', data.token);
 
-        router.push('/home');
+        router.push('/clocking');
 
         store.commit('setCurrentUser', data.user);
 
