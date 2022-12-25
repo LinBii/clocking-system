@@ -24,10 +24,16 @@
             </li>
 
             <li class="nav-item">
-              <router-link to="#" class="nav-link text-white mr-3"
+              <router-link to="/" class="nav-link text-white mr-3"
                 >{{ currentUser.name || '使用者' }} 您好</router-link
               >
             </li>
+            <router-link
+              :to="{ name: 'user-edit', params: { id: currentUser.id } }"
+              class="nav-link text-white mr-3"
+            >
+              修改密碼
+            </router-link>
             <li class="nav-item">
               <router-link to="#" class="nav-link text-white mr-3"
                 >QR code打卡</router-link

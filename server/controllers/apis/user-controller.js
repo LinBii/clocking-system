@@ -68,13 +68,27 @@ const userController = {
       });
   },
   getCurrentUser: (req, res) => {
-    const { id, name, email, role } = req.user;
+    const { id, name, email, role, password } = req.user;
     res.json({
       id,
       name,
       email,
       role,
+      password,
     });
+  },
+  updatePassword: async (req, res, next) => {
+    if (Number(req.params.id) !== Number(req.user.id)) {
+      return res.status(401).json({ status: 'error', message: '拒絕存取！' });
+    }
+    try {
+      const user = await User.findByPk(req.params.id);
+      const hash = await bcrypt.hash(req.body.newPassword, 10);
+      await user.update({ password: hash });
+      return res.json({ status: 'success', message: '密碼更改成功！' });
+    } catch (err) {
+      next(err);
+    }
   },
 };
 

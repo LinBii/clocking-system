@@ -7,7 +7,7 @@ export default createStore({
       id: -1,
       name: '',
       email: '',
-      isAdmin: false,
+      role: '',
     },
     isAuthenticated: false,
     token: '',
@@ -46,6 +46,7 @@ export default createStore({
           email,
           role,
         });
+        return true;
       } catch (error) {
         console.error(error.message);
         commit('revokeAuthentication');
