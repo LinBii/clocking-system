@@ -56,6 +56,7 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import authorizationAPI from './../apis/authorization';
 import { Toast } from './../utils/helpers';
 
@@ -65,6 +66,7 @@ export default {
     const email = ref('');
     const password = ref('');
     const isProcessing = ref(false);
+    const store = useStore();
 
     async function handleSubmit() {
       if (!this.email || !this.password) {
@@ -82,6 +84,7 @@ export default {
           email: this.email,
           password: this.password,
         });
+
         const { data } = response;
 
         if (data.status === 'error') {
@@ -90,20 +93,29 @@ export default {
 
         localStorage.setItem('token', data.token);
 
-        router.push('/home');
+        router.push('/clocking');
+
+        store.commit('setCurrentUser', data.user);
 
         Toast.fire({
           icon: 'success',
           title: '登入成功！',
         });
       } catch (error) {
-        this.password = '';
-        Toast.fire({
-          icon: 'warning',
-          title: '請確認您輸入了正確的帳號密碼',
-        });
+        if (error.message === 'Network Error') {
+          this.password = '';
+          Toast.fire({
+            icon: 'warning',
+            title: '無法連線到伺服器！',
+          });
+        } else {
+          this.password = '';
+          Toast.fire({
+            icon: 'warning',
+            title: '請確認您輸入了正確的帳號密碼',
+          });
+        }
         this.isProcessing = false;
-        console.log('error', error);
       }
     }
 

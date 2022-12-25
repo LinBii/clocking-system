@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container py-5">
     <h1>歡迎來到PUNCHIN！</h1>
     <p>現在時間： {{ currentTime }}</p>
     <button :disabled="clockedIn" @click="clockIn">打卡上班</button>
@@ -7,7 +7,8 @@
     {{ clockInTime }}
     {{ clockOutTime }}
     {{ elapsedTime }}
-    <p v-if="absent">您今天的出勤狀況為缺勤！</p>
+    <p v-if="!clockedIn">您今天還沒打卡！</p>
+    <p v-if="clockedIn && absent">您今天的出勤狀況為缺勤！</p>
   </div>
 </template>
 
