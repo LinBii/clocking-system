@@ -9,12 +9,11 @@ let attendanceController = {
       });
     }
     return Attendance.create({
-      userId: req.user.id,
+      UserId: req.user.id,
       date: req.body.date,
       clockIn: req.body.clockIn,
     })
       .then((attendance) => {
-        console.log('attendance', attendance);
         return res.json({
           status: 'success',
           message: 'created new clock-in successfully',
