@@ -9,16 +9,15 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id: {
-        type: Sequelize.INTEGER
-      },
       date: {
+        allowNull: false,
         type: Sequelize.DATE
       },
-      clock_in: {
+      clockIn: {
+        allowNull: false,
         type: Sequelize.DATE
       },
-      clock_out: {
+      clockOut: {
         type: Sequelize.DATE
       },
       createdAt: {
