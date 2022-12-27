@@ -5,19 +5,26 @@ let attendanceController = {
     if (!req.body.date || !req.body.clockIn) {
       return res.json({
         status: 'error',
-        message: 'attendance time not exist!',
+        message: '出勤時間不存在！',
       });
     }
-    return Attendance.create({
-      UserId: req.user.id,
-      date: req.body.date,
-      clockIn: req.body.clockIn,
-    })
-      .then((attendance) => {
+    Attendance.findOne({ where: { date: req.body.date } })
+      .then((data) => {
+        if (data) {
+          return res.json({ status: 'error', message: '今天已經打卡上班了！' });
+        }
+      })
+      .then(
+        Attendance.create({
+          UserId: req.user.id,
+          date: req.body.date,
+          clockIn: req.body.clockIn,
+        })
+      )
+      .then(() => {
         return res.json({
           status: 'success',
           message: 'created new clock-in successfully',
-          attendanceId: attendance.id,
         });
       })
       .catch((err) => {
