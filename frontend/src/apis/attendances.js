@@ -12,9 +12,13 @@ export default {
       }
     );
   },
-  update({ userId, formData }) {
-    return apiHelper.put(`/attendances/${userId}`, formData, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+  update({ userId, date, clockOut }) {
+    return apiHelper.put(
+      `/attendances/${userId}`,
+      { userId, date, clockOut },
+      {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      }
+    );
   },
 };

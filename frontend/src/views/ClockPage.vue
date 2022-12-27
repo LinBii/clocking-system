@@ -14,12 +14,15 @@
 
 <script>
 import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
 import dayjs from 'dayjs';
 import attendanceAPI from './../apis/attendances';
 import { Toast } from './../utils/helpers';
 
 export default {
   setup() {
+    const store = useStore();
+
     const currentTime = ref(new Date());
     const date = ref('');
     const clockInTime = ref('');
@@ -75,14 +78,32 @@ export default {
       }
     }
 
-    function clockOut() {
+    async function clockOut() {
       clockOutTime.value = new Date();
+
+      date.value = dayjs().format('YYYY-MM-DD 00:00:00');
 
       // Set the clockOutTime ref to the current time, if it is later than the current value
       if (!clockOutTime.value || new Date() > clockOutTime.value) {
         clockOutTime.value = new Date();
 
         clockedIn.value = true;
+      }
+
+      try {
+        const { data } = await attendanceAPI.update({
+          date: date.value,
+          userId: store.getters.userId,
+          clockOut: clockOutTime.value,
+        });
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: error.message,
+        });
       }
     }
 

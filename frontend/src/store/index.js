@@ -12,7 +12,9 @@ export default createStore({
     isAuthenticated: false,
     token: '',
   },
-  getters: {},
+  getters: {
+    userId: (state) => state.currentUser.id,
+  },
   mutations: {
     setCurrentUser(state, currentUser) {
       state.currentUser = {

@@ -26,35 +26,34 @@ let attendanceController = {
       next(err);
     }
   },
-  updateAttendance: (req, res, next) => {
-    return Attendance.findByPk(req.params.id)
-      .then((attendance) => {
-        if (!attendance) {
-          return res.json({
-            status: 'error',
-            message: 'attendance record not found',
-          });
-        }
-        return Attendance.update({
-          clockOut: req.body.clockOut,
-        });
-      })
-
-      .then((result) => {
-        if (result[0] === 0) {
-          return res.json({
-            status: 'error',
-            message: 'attendance record not found',
-          });
-        }
-        return res.json({
-          status: 'success',
-          message: 'updated clock-out successfully',
-        });
-      })
-      .catch((err) => {
-        next(err);
+  updateAttendance: async (req, res, next) => {
+    try {
+      const data = await Attendance.findOne({
+        where: { date: req.body.date, UserId: req.params.id },
       });
+      console.log(data.id);
+      if (!data) {
+        return res.json({
+          status: 'error',
+          message: 'attendance record not found',
+        });
+      }
+      await Attendance.update(
+        {
+          clockOut: req.body.clockOut,
+        },
+        {
+          where: { id: data.id },
+        }
+      );
+
+      return res.json({
+        status: 'success',
+        message: 'updated clock-out successfully',
+      });
+    } catch (err) {
+      next(err);
+    }
   },
 };
 
