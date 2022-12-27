@@ -14,12 +14,17 @@
 
 <script>
 import { ref, computed } from 'vue';
+import dayjs from 'dayjs';
+import attendanceAPI from './../apis/attendances';
+import { Toast } from './../utils/helpers';
 
 export default {
   setup() {
     const currentTime = ref(new Date());
-    const clockInTime = ref(null);
-    const clockOutTime = ref(null);
+    const date = ref('');
+    const clockInTime = ref('');
+    const clockOutTime = ref('');
+    const dayChangeTime = ref('');
 
     // check if the user is clocked in
     const clockedIn = ref(false);
@@ -35,11 +40,39 @@ export default {
       return elapsedTime.value < 28800000;
     });
 
-    function clockIn() {
+    async function clockIn() {
       clockInTime.value = new Date();
+
+      // date format in database is YYYY-MM-DD 00:00:00
+      date.value = dayjs().format('YYYY-MM-DD 00:00:00');
+
+      // Check if it is past the day change time (GMT+8 05:00)
+      dayChangeTime.value = new Date(
+        currentTime.value.getFullYear(),
+        currentTime.value.getMonth(),
+        currentTime.value.getDate() + 1,
+        5,
+        0,
+        0
+      );
 
       // able the clock-out button, disable the clock-in button
       clockedIn.value = true;
+
+      try {
+        const { data } = await attendanceAPI.create({
+          date: date.value,
+          clockIn: clockInTime.value,
+        });
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: error.message,
+        });
+      }
     }
 
     function clockOut() {
@@ -57,17 +90,12 @@ export default {
     setInterval(() => {
       currentTime.value = new Date();
 
-      // Check if it is past the day change time (GMT+8 05:00)
-      const dayChangeTime = new Date(
-        currentTime.value.getFullYear(),
-        currentTime.value.getMonth(),
-        currentTime.value.getDate() + 1,
-        5,
-        0,
-        0
-      );
-      if (currentTime.value > dayChangeTime) {
-        clockOutTime.value = null;
+      if (currentTime.value > dayChangeTime.value) {
+        if (absent.value === true && clockedIn.value === true) {
+          console.log('Notify the admin that this user is absent');
+        }
+
+        clockOutTime.value = '';
 
         clockedIn.value = false;
       }
