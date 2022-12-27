@@ -14,12 +14,20 @@
 
 <script>
 import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
+import dayjs from 'dayjs';
+import attendanceAPI from './../apis/attendances';
+import { Toast } from './../utils/helpers';
 
 export default {
   setup() {
+    const store = useStore();
+
     const currentTime = ref(new Date());
-    const clockInTime = ref(null);
-    const clockOutTime = ref(null);
+    const date = ref('');
+    const clockInTime = ref('');
+    const clockOutTime = ref('');
+    const dayChangeTime = ref('');
 
     // check if the user is clocked in
     const clockedIn = ref(false);
@@ -35,30 +43,14 @@ export default {
       return elapsedTime.value < 28800000;
     });
 
-    function clockIn() {
+    async function clockIn() {
       clockInTime.value = new Date();
 
-      // able the clock-out button, disable the clock-in button
-      clockedIn.value = true;
-    }
-
-    function clockOut() {
-      clockOutTime.value = new Date();
-
-      // Set the clockOutTime ref to the current time, if it is later than the current value
-      if (!clockOutTime.value || new Date() > clockOutTime.value) {
-        clockOutTime.value = new Date();
-
-        clockedIn.value = true;
-      }
-    }
-
-    // Update currentTime ref every second
-    setInterval(() => {
-      currentTime.value = new Date();
+      // date format in database is YYYY-MM-DD 00:00:00
+      date.value = dayjs().format('YYYY-MM-DD 00:00:00');
 
       // Check if it is past the day change time (GMT+8 05:00)
-      const dayChangeTime = new Date(
+      dayChangeTime.value = new Date(
         currentTime.value.getFullYear(),
         currentTime.value.getMonth(),
         currentTime.value.getDate() + 1,
@@ -66,8 +58,65 @@ export default {
         0,
         0
       );
-      if (currentTime.value > dayChangeTime) {
-        clockOutTime.value = null;
+
+      // able the clock-out button, disable the clock-in button
+      clockedIn.value = true;
+
+      try {
+        const { data } = await attendanceAPI.create({
+          date: date.value,
+          clockIn: clockInTime.value,
+        });
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: error.message,
+        });
+      }
+    }
+
+    async function clockOut() {
+      clockOutTime.value = new Date();
+
+      date.value = dayjs().format('YYYY-MM-DD 00:00:00');
+
+      // Set the clockOutTime ref to the current time, if it is later than the current value
+      if (!clockOutTime.value || new Date() > clockOutTime.value) {
+        clockOutTime.value = new Date();
+
+        clockedIn.value = true;
+      }
+
+      try {
+        const { data } = await attendanceAPI.update({
+          date: date.value,
+          userId: store.getters.userId,
+          clockOut: clockOutTime.value,
+        });
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: error.message,
+        });
+      }
+    }
+
+    // Update currentTime ref every second
+    setInterval(() => {
+      currentTime.value = new Date();
+
+      if (currentTime.value > dayChangeTime.value) {
+        if (absent.value === true && clockedIn.value === true) {
+          console.log('Notify the admin that this user is absent');
+        }
+
+        clockOutTime.value = '';
 
         clockedIn.value = false;
       }

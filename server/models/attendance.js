@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Attendance extends Model {
     /**
@@ -14,14 +12,16 @@ module.exports = (sequelize, DataTypes) => {
       Attendance.belongsTo(models.User);
     }
   }
-  Attendance.init({
-    user_id: DataTypes.INTEGER,
-    date: DataTypes.DATE,
-    clock_in: DataTypes.DATE,
-    clock_out: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'Attendance',
-  });
+  Attendance.init(
+    {
+      date: DataTypes.DATE,
+      clockIn: DataTypes.DATE,
+      clockOut: DataTypes.DATE,
+    },
+    {
+      sequelize,
+      modelName: 'Attendance',
+    }
+  );
   return Attendance;
 };

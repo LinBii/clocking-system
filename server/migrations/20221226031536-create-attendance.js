@@ -7,31 +7,30 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      user_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       date: {
-        type: Sequelize.DATE
+        allowNull: false,
+        type: Sequelize.DATEONLY,
       },
-      clock_in: {
-        type: Sequelize.DATE
+      clockIn: {
+        allowNull: false,
+        type: Sequelize.DATE,
       },
-      clock_out: {
-        type: Sequelize.DATE
+      clockOut: {
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Attendances');
-  }
+  },
 };
