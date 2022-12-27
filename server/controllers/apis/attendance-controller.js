@@ -1,35 +1,30 @@
 const { Attendance } = require('../../models');
 
 let attendanceController = {
-  postAttendance: (req, res, next) => {
+  postAttendance: async (req, res, next) => {
     if (!req.body.date || !req.body.clockIn) {
       return res.json({
         status: 'error',
         message: '出勤時間不存在！',
       });
     }
-    Attendance.findOne({ where: { date: req.body.date } })
-      .then((data) => {
-        if (data) {
-          return res.json({ status: 'error', message: '今天已經打卡上班了！' });
-        }
-      })
-      .then(
-        Attendance.create({
-          UserId: req.user.id,
-          date: req.body.date,
-          clockIn: req.body.clockIn,
-        })
-      )
-      .then(() => {
-        return res.json({
-          status: 'success',
-          message: 'created new clock-in successfully',
-        });
-      })
-      .catch((err) => {
-        next(err);
+    try {
+      const data = await Attendance.findOne({ where: { date: req.body.date } });
+      if (data) {
+        return res.json({ status: 'error', message: '今天已經打卡上班了！' });
+      }
+      await Attendance.create({
+        UserId: req.user.id,
+        date: req.body.date,
+        clockIn: req.body.clockIn,
       });
+      return res.json({
+        status: 'success',
+        message: 'created new clock-in successfully',
+      });
+    } catch (err) {
+      next(err);
+    }
   },
   updateAttendance: (req, res, next) => {
     return Attendance.findByPk(req.params.id)
