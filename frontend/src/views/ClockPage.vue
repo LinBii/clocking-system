@@ -4,8 +4,8 @@
     <p>現在時間： {{ currentTime }}</p>
     <button :disabled="clockedIn" @click="clockIn">打卡上班</button>
     <button :disabled="!clockedIn" @click="clockOut">打卡下班</button>
-    {{ clockInTime }}
-    {{ clockOutTime }}
+    {{ clockInTimeValue }}
+    {{ clockOutTimeValue }}
     {{ elapsedTime }}
     {{ dayChangeTime }}
     <p v-if="!clockedIn">您今天還沒打卡！</p>
@@ -20,21 +20,30 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import attendanceAPI from './../apis/attendances';
-import { Toast } from './../utils/helpers';
+import { Toast, storeCheck } from './../utils/helpers';
 dayjs.extend(utc, timezone);
 
 export default {
   setup() {
     const store = useStore();
 
+    const clockedInValue = localStorage.getItem('clockedIn');
+    const clockInTimeValue = localStorage.getItem('clockInTime');
+    const clockOutTimeValue = localStorage.getItem('clockOutTime');
+
+    const clockedInCheck = storeCheck(clockedInValue, store.state.clockedIn);
+
     const currentTime = ref('');
     const date = ref('');
-    const clockInTime = ref('');
-    const clockOutTime = ref('');
+    const clockInTime = ref(clockInTimeValue);
+    const clockOutTime = ref(clockOutTimeValue);
     const dayChangeTime = ref('');
 
+    // Check if the absent message is logged
+    let messageLogged = false;
+
     // check if the user is clocked in
-    const clockedIn = ref(false);
+    const clockedIn = ref(clockedInCheck);
 
     const elapsedTime = computed(() => {
       if (clockInTime.value && clockOutTime.value) {
@@ -49,6 +58,8 @@ export default {
 
     async function clockIn() {
       clockInTime.value = dayjs.utc().local();
+      store.commit('setClockInTime', clockInTime.value);
+      localStorage.setItem('clockInTime', clockInTime.value);
 
       // date format in database is YYYY-MM-DD 00:00:00
       date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
@@ -60,6 +71,8 @@ export default {
 
       // able the clock-out button, disable the clock-in button
       clockedIn.value = true;
+      store.commit('setClockedIn', true);
+      localStorage.setItem('clockedIn', true);
 
       try {
         const { data } = await attendanceAPI.create({
@@ -79,6 +92,8 @@ export default {
 
     async function clockOut() {
       clockOutTime.value = dayjs.utc().local();
+      store.commit('setClockOutTime', clockOutTime.value);
+      localStorage.setItem('clockOutTime', clockOutTime.value);
 
       const hour = dayjs().hour();
 
@@ -96,8 +111,12 @@ export default {
       // Set the clockOutTime ref to the current time, if it is later than the current value
       if (!clockOutTime.value || dayjs.utc().local() > clockOutTime.value) {
         clockOutTime.value = dayjs.utc().local();
+        store.commit('setClockOutTime', clockOutTime.value);
+        localStorage.setItem('clockOutTime', clockOutTime.value);
 
         clockedIn.value = true;
+        store.commit('setClockedIn', true);
+        localStorage.setItem('clockedIn', true);
       }
 
       try {
@@ -121,7 +140,10 @@ export default {
     setInterval(() => {
       currentTime.value = dayjs.utc().local().format();
 
-      if (currentTime.value > dayChangeTime.value) {
+      if (
+        dayjs(currentTime.value).isAfter(dayChangeTime.value) &&
+        !messageLogged
+      ) {
         if (absent.value === true && clockedIn.value === true) {
           console.log('Notify the admin that this user is absent');
         }
@@ -129,13 +151,16 @@ export default {
         clockOutTime.value = '';
 
         clockedIn.value = false;
+        store.commit('setClockedIn', false);
+
+        localStorage.setItem('clockedIn', false);
       }
     }, 1000);
 
     return {
       currentTime,
-      clockInTime,
-      clockOutTime,
+      clockInTimeValue,
+      clockOutTimeValue,
       elapsedTime,
       dayChangeTime,
       clockedIn,

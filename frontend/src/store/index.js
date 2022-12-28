@@ -11,6 +11,9 @@ export default createStore({
     },
     isAuthenticated: false,
     token: '',
+    clockedIn: false,
+    clockInTime: '',
+    clockOutTime: '',
   },
   getters: {
     userId: (state) => state.currentUser.id,
@@ -29,6 +32,15 @@ export default createStore({
       state.isAuthenticated = false;
       state.token = '';
       localStorage.removeItem('token');
+    },
+    setClockedIn(state, value) {
+      state.clockedIn = value;
+    },
+    setClockInTime(state, value) {
+      state.clockInTime = value;
+    },
+    setClockOutTime(state, value) {
+      state.clockOutTime = value;
     },
   },
   actions: {
