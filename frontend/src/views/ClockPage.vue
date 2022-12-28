@@ -45,15 +45,13 @@ export default {
     // check if the user is clocked in
     const clockedIn = ref(clockedInCheck);
 
-    const elapsedTime = computed(() => {
-      if (clockInTime.value && clockOutTime.value) {
-        return clockOutTime.value - clockInTime.value;
-      }
-      return null;
-    });
+    const elapsedTime = dayjs(clockOutTime.value).diff(
+      dayjs(clockInTime.value),
+      'hour'
+    );
 
     const absent = computed(() => {
-      return elapsedTime.value < 28800000;
+      return elapsedTime < 8;
     });
 
     async function clockIn() {
