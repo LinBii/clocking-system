@@ -4,9 +4,10 @@
     <p>現在時間： {{ currentTime }}</p>
     <button :disabled="clockedIn" @click="clockIn">打卡上班</button>
     <button :disabled="!clockedIn" @click="clockOut">打卡下班</button>
-    {{ clockInTime }}
-    {{ clockOutTime }}
+    {{ clockInTimeValue }}
+    {{ clockOutTimeValue }}
     {{ elapsedTime }}
+    {{ dayChangeTime }}
     <p v-if="!clockedIn">您今天還沒打卡！</p>
     <p v-if="clockedIn && absent">您今天的出勤狀況為缺勤！</p>
   </div>
@@ -16,51 +17,60 @@
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import attendanceAPI from './../apis/attendances';
-import { Toast } from './../utils/helpers';
+import { Toast, storeCheck } from './../utils/helpers';
+dayjs.extend(utc, timezone);
 
 export default {
   setup() {
     const store = useStore();
 
-    const currentTime = ref(new Date());
+    const clockedInValue = localStorage.getItem('clockedIn');
+    const clockInTimeValue = localStorage.getItem('clockInTime');
+    const clockOutTimeValue = localStorage.getItem('clockOutTime');
+
+    const clockedInCheck = storeCheck(clockedInValue, store.state.clockedIn);
+
+    const currentTime = ref('');
     const date = ref('');
-    const clockInTime = ref('');
-    const clockOutTime = ref('');
+    const clockInTime = ref(clockInTimeValue);
+    const clockOutTime = ref(clockOutTimeValue);
     const dayChangeTime = ref('');
 
-    // check if the user is clocked in
-    const clockedIn = ref(false);
+    // Check if the absent message is logged
+    let messageLogged = false;
 
-    const elapsedTime = computed(() => {
-      if (clockInTime.value && clockOutTime.value) {
-        return clockOutTime.value - clockInTime.value;
-      }
-      return null;
-    });
+    // check if the user is clocked in
+    const clockedIn = ref(clockedInCheck);
+
+    const elapsedTime = dayjs(clockOutTime.value).diff(
+      dayjs(clockInTime.value),
+      'hour'
+    );
 
     const absent = computed(() => {
-      return elapsedTime.value < 28800000;
+      return elapsedTime < 8;
     });
 
     async function clockIn() {
-      clockInTime.value = new Date();
+      clockInTime.value = dayjs.utc().local();
+      store.commit('setClockInTime', clockInTime.value);
+      localStorage.setItem('clockInTime', clockInTime.value);
 
       // date format in database is YYYY-MM-DD 00:00:00
-      date.value = dayjs().format('YYYY-MM-DD 00:00:00');
+      date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
 
       // Check if it is past the day change time (GMT+8 05:00)
-      dayChangeTime.value = new Date(
-        currentTime.value.getFullYear(),
-        currentTime.value.getMonth(),
-        currentTime.value.getDate() + 1,
-        5,
-        0,
-        0
-      );
+      dayChangeTime.value = dayjs(date.value)
+        .add(1, 'day')
+        .format('YYYY-MM-DD 05:00:00');
 
       // able the clock-out button, disable the clock-in button
       clockedIn.value = true;
+      store.commit('setClockedIn', true);
+      localStorage.setItem('clockedIn', true);
 
       try {
         const { data } = await attendanceAPI.create({
@@ -79,15 +89,32 @@ export default {
     }
 
     async function clockOut() {
-      clockOutTime.value = new Date();
+      clockOutTime.value = dayjs.utc().local();
+      store.commit('setClockOutTime', clockOutTime.value);
+      localStorage.setItem('clockOutTime', clockOutTime.value);
 
-      date.value = dayjs().format('YYYY-MM-DD 00:00:00');
+      const hour = dayjs().hour();
+
+      // When the clock out time is between 00:00 ~ 05:00, the date value would be considered as the day before
+      if (hour >= 0 && hour < 5) {
+        date.value = dayjs
+          .utc()
+          .local()
+          .subtract(1, 'day')
+          .format('YYYY-MM-DD 00:00:00');
+      } else {
+        date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+      }
 
       // Set the clockOutTime ref to the current time, if it is later than the current value
-      if (!clockOutTime.value || new Date() > clockOutTime.value) {
-        clockOutTime.value = new Date();
+      if (!clockOutTime.value || dayjs.utc().local() > clockOutTime.value) {
+        clockOutTime.value = dayjs.utc().local();
+        store.commit('setClockOutTime', clockOutTime.value);
+        localStorage.setItem('clockOutTime', clockOutTime.value);
 
         clockedIn.value = true;
+        store.commit('setClockedIn', true);
+        localStorage.setItem('clockedIn', true);
       }
 
       try {
@@ -109,9 +136,12 @@ export default {
 
     // Update currentTime ref every second
     setInterval(() => {
-      currentTime.value = new Date();
+      currentTime.value = dayjs.utc().local().format();
 
-      if (currentTime.value > dayChangeTime.value) {
+      if (
+        dayjs(currentTime.value).isAfter(dayChangeTime.value) &&
+        !messageLogged
+      ) {
         if (absent.value === true && clockedIn.value === true) {
           console.log('Notify the admin that this user is absent');
         }
@@ -119,14 +149,18 @@ export default {
         clockOutTime.value = '';
 
         clockedIn.value = false;
+        store.commit('setClockedIn', false);
+
+        localStorage.setItem('clockedIn', false);
       }
     }, 1000);
 
     return {
       currentTime,
-      clockInTime,
-      clockOutTime,
+      clockInTimeValue,
+      clockOutTimeValue,
       elapsedTime,
+      dayChangeTime,
       clockedIn,
       clockIn,
       clockOut,
