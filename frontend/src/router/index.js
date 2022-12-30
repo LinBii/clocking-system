@@ -3,6 +3,7 @@ import NotFound from '../views/NotFound.vue';
 import SignIn from '../views/SignIn.vue';
 import SignUp from '../views/SignUp.vue';
 import ClockPage from '../views/ClockPage.vue';
+import QRPage from '../views/QRPage.vue';
 import UserEdit from '../views/UserEdit.vue';
 import store from './../store';
 
@@ -21,6 +22,16 @@ const routes = [
     path: '/clocking',
     name: 'clocking',
     component: ClockPage,
+  },
+  {
+    path: '/qrclocking/read',
+    name: 'read-qrclocking',
+    component: QRPage,
+  },
+  {
+    path: '/qrclocking',
+    name: 'qrclocking',
+    component: QRPage,
   },
   {
     path: '/users/:id/edit',
