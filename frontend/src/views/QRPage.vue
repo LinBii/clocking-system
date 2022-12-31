@@ -1,8 +1,9 @@
 <template>
   <main>
     <div class="container py-5">
-      <a href="#/qrclocking/">QR Generator</a> |
+      <a href="#/qrclocking">QR Generator</a> |
       <a href="#/qrclocking/read">QR Reader</a> |
+      <p>必須允許使用相機才能使用QR Code打卡！</p>
       <component :is="currentView" />
     </div>
   </main>
@@ -16,7 +17,7 @@ import { computed, ref } from 'vue';
 export default {
   setup() {
     const routes = {
-      '/qrclocking/': QRGenerator,
+      '/qrclocking': QRGenerator,
       '/qrclocking/read': QRReader,
     };
 

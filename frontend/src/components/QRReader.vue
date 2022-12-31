@@ -1,24 +1,24 @@
 <template>
-  <qrcode-stream @init="onInit" @decode="onDecode"></qrcode-stream>
+  <qr-stream @init="onInit" @decode="onDecode"></qr-stream>
   <br />
   <p>{{ errorText }}</p>
-  <p>{{ decodedString }}</p>
+  <p>Result: {{ state.data }}</p>
 </template>
 
 <script>
-import { ref } from 'vue';
-import { QrcodeStream } from 'vue-qrcode-reader';
+import { ref, reactive } from 'vue';
+import { QrStream } from 'vue3-qr-reader';
 
 export default {
   components: {
-    QrcodeStream,
+    QrStream,
   },
   setup() {
     let errorText = ref('');
-    let decodedString = ref('');
+    const state = reactive({ data: null });
 
-    function onDecode(decodedString) {
-      decodedString.value = decodedString;
+    function onDecode(data) {
+      state.data = data;
     }
 
     async function onInit(promise) {
@@ -47,7 +47,7 @@ export default {
       }
     }
 
-    return { onDecode, onInit, errorText, decodedString };
+    return { onDecode, onInit, errorText, state };
   },
 };
 </script>
