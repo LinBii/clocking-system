@@ -17,5 +17,6 @@ module.exports = {
   },
   production: {
     use_env_variable: 'CLEARDB_DATABASE_URL',
+    timezone: '+08:00',
   },
 };
