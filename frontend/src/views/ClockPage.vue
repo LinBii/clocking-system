@@ -55,6 +55,7 @@ export default {
     });
 
     async function clockIn() {
+      // TODO: No localStorage and commit when error
       clockInTime.value = dayjs.utc().local();
       store.commit('setClockInTime', clockInTime.value);
       localStorage.setItem('clockInTime', clockInTime.value);
@@ -62,6 +63,7 @@ export default {
       // date format in database is YYYY-MM-DD 00:00:00
       date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
 
+      // TODO: Store dayChangeTime or it will be reset
       // Check if it is past the day change time (GMT+8 05:00)
       dayChangeTime.value = dayjs(date.value)
         .add(1, 'day')
@@ -89,6 +91,7 @@ export default {
     }
 
     async function clockOut() {
+      // TODO: No localStorage and commit when error
       clockOutTime.value = dayjs.utc().local();
       store.commit('setClockOutTime', clockOutTime.value);
       localStorage.setItem('clockOutTime', clockOutTime.value);
@@ -138,6 +141,7 @@ export default {
     setInterval(() => {
       currentTime.value = dayjs.utc().local().format();
 
+      // TODO: Clean up localStorage after dayChangeTime
       if (
         dayjs(currentTime.value).isAfter(dayChangeTime.value) &&
         !messageLogged
