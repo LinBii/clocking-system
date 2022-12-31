@@ -1,7 +1,8 @@
 <template>
-  <qrcode-stream @init="onInit" @decode="onDecode" />
+  <qrcode-stream @init="onInit" @decode="onDecode"></qrcode-stream>
   <br />
-  <p>{{ text }}</p>
+  <p>{{ errorText }}</p>
+  <p>{{ decodedString }}</p>
 </template>
 
 <script>
@@ -13,10 +14,11 @@ export default {
     QrcodeStream,
   },
   setup() {
-    let text = ref('');
+    let errorText = ref('');
+    let decodedString = ref('');
 
     function onDecode(decodedString) {
-      text.value = decodedString;
+      decodedString.value = decodedString;
     }
 
     async function onInit(promise) {
@@ -25,26 +27,27 @@ export default {
         // successfully initialized
         console.log(capabilities);
       } catch (error) {
+        console.log(error);
         if (error.name === 'NotAllowedError') {
-          text.value = 'Denied! No permission';
-          // user denied camera access permisson
+          errorText.value = 'Denied! No permission 允許攝影機功能後才能使用！';
         } else if (error.name === 'NotFoundError') {
-          // no suitable camera device installed
+          errorText.value = 'no suitable camera device installed';
         } else if (error.name === 'NotSupportedError') {
-          // page is not served over HTTPS (or localhost)
+          errorText.value = 'page is not served over HTTPS (or localhost)';
         } else if (error.name === 'NotReadableError') {
-          // maybe camera is already in use
+          errorText.value = 'maybe camera is already in use';
         } else if (error.name === 'OverconstrainedError') {
-          // did you requested the front camera although there is none?
+          errorText.value =
+            'did you requested the front camera although there is none?';
         } else if (error.name === 'StreamApiNotSupportedError') {
-          // browser seems to be lacking features
+          errorText.value = 'browser seems to be lacking features';
         }
       } finally {
         // hide loading indicator
       }
     }
 
-    return { onDecode, onInit, text };
+    return { onDecode, onInit, errorText, decodedString };
   },
 };
 </script>
