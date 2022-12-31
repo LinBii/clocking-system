@@ -9,12 +9,14 @@ let attendanceController = {
       });
     }
     try {
-      const data = await Attendance.findOne({ where: { date: req.body.date } });
+      const data = await Attendance.findOne({
+        where: { date: req.body.date, UserId: req.body.userId },
+      });
       if (data) {
         return res.json({ status: 'error', message: '今天已經打卡上班了！' });
       }
       await Attendance.create({
-        UserId: req.user.id,
+        UserId: req.body.userId,
         date: req.body.date,
         clockIn: req.body.clockIn,
       });
@@ -29,9 +31,8 @@ let attendanceController = {
   updateAttendance: async (req, res, next) => {
     try {
       const data = await Attendance.findOne({
-        where: { date: req.body.date, UserId: req.params.id },
+        where: { date: req.body.date, UserId: req.body.userId },
       });
-      console.log(data.id);
       if (!data) {
         return res.json({
           status: 'error',

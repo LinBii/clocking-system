@@ -74,6 +74,7 @@ export default {
 
       try {
         const { data } = await attendanceAPI.create({
+          userId: store.getters.userId,
           date: date.value,
           clockIn: clockInTime.value,
         });

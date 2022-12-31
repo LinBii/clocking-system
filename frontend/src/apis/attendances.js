@@ -3,10 +3,10 @@ import { apiHelper } from './../utils/helpers';
 const getToken = () => localStorage.getItem('token');
 
 export default {
-  create({ date, clockIn }) {
+  create({ userId, date, clockIn }) {
     return apiHelper.post(
       '/attendances',
-      { date, clockIn },
+      { userId, date, clockIn },
       {
         headers: { Authorization: `Bearer ${getToken()}` },
       }
