@@ -1,4 +1,4 @@
-# fly.toml file generated for punchin on 2022-12-30T20:39:17+08:00
+# fly.toml file generated for punchin on 2022-12-31T17:32:55+08:00
 
 app = "punchin"
 kill_signal = "SIGINT"
