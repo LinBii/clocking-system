@@ -35,7 +35,7 @@
               修改密碼
             </router-link>
             <li class="nav-item">
-              <router-link to="#" class="nav-link text-white mr-3"
+              <router-link to="/qrclocking" class="nav-link text-white mr-3"
                 >QR code打卡</router-link
               >
             </li>
