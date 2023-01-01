@@ -15,14 +15,33 @@ passport.use(
       usernameField: 'email',
       passwordField: 'password',
     },
-    (email, password, done) => {
-      User.findOne({ where: { email } }).then((user) => {
+    async (email, password, done) => {
+      try {
+        const user = await User.findOne({ where: { email } });
         if (!user) return done(null, false);
-        bcrypt.compare(password, user.password).then((res) => {
-          if (!res) return done(null, false);
-          return done(null, user);
-        });
-      });
+
+        const passwordMatches = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatches) {
+          if (user.wrongPasswordTimes > 5) {
+            return res.status(400).json({
+              status: 'error',
+              message: '你的帳戶已被封鎖!',
+            });
+          } else {
+            User.increment('wrongPasswordTimes', {
+              by: 1,
+              where: { id: user.id },
+            });
+          }
+
+          console.log(user.wrongPasswordTimes);
+          return done(null, false, { message: '密碼錯誤！' });
+        }
+        return done(null, user);
+      } catch (error) {
+        done(error);
+      }
     }
   )
 );
