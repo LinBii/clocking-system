@@ -2,33 +2,45 @@
   <div class="container py-5">
     <qrcode-vue :value="value" :size="size"></qrcode-vue>
     <br />
-    <button v-on:click="upsize">Upsize</button>
-    <br />
-    <button v-on:click="random">Random</button>
+    {{ value }}
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import QrcodeVue from 'qrcode.vue';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc, timezone);
+
 export default {
   components: {
     QrcodeVue,
   },
   setup() {
+    const dateValue = localStorage.getItem('date');
+
+    const date = ref(dateValue);
+    let data = reactive({
+      date: null,
+    });
+
     let value = ref('hr:defaultdata.random');
-    let size = ref(100);
+    let size = ref(300);
 
-    function upsize() {
-      size.value = size.value + 100;
-    }
+    date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+    localStorage.setItem('date', date.value);
 
-    function random() {
-      const result = Math.random().toString(36);
-      value.value = 'hr://' + result;
-    }
+    data = {
+      date: date.value,
+    };
 
-    return { value, size, upsize, random };
+    const encodedString = btoa(JSON.stringify(data));
+    const urlEncodedString = encodeURIComponent(encodedString);
+
+    value.value = urlEncodedString;
+    return { value, size };
   },
 };
 </script>

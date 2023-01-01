@@ -61,7 +61,6 @@ export default {
       // date format in database is YYYY-MM-DD 00:00:00
       date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
 
-      // Check if it is past the day change time (GMT+8 05:00)
       dayChangeTime.value = dayjs(date.value)
         .add(1, 'day')
         .format('YYYY-MM-DD 05:00:00');
