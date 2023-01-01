@@ -34,21 +34,46 @@ const userController = {
       })
       .catch((err) => next(err));
   },
-  signIn: (req, res, next) => {
+  signIn: async (req, res, next) => {
     const { email, password } = req.body;
     if (!email || !password)
       return res.json({ status: 'error', message: '請確實填寫欄位！' });
 
-    User.findOne({ where: { email } })
-      .then((user) => {
-        if (!user)
-          return res
-            .status(401)
-            .json({ status: 'error', message: '使用者不存在！' });
-        if (!bcrypt.compareSync(password, user.password))
-          return res
-            .status(401)
-            .json({ status: 'error', message: '密碼錯誤！' });
+    try {
+      const user = await User.findOne({ where: { email } });
+      // Prevent users from knowing if certain user is exist or not
+      if (!user) {
+        return res
+          .status(401)
+          .json({ status: 'error', message: '請確認是否輸入正確的帳號密碼' });
+      }
+      if (user.wrongPasswordTimes >= 5 || user.isLocked) {
+        return res
+          .status(401)
+          .json({ status: 'error', message: '你的帳號已被上鎖！' });
+      } else if (!bcrypt.compareSync(password, user.password)) {
+        User.increment('wrongPasswordTimes', {
+          by: 1,
+          where: { id: user.id },
+        });
+        if (user.wrongPasswordTimes === 4) {
+          User.update(
+            { isLocked: true },
+            {
+              where: {
+                id: user.id,
+              },
+            }
+          );
+          return res.status(401).json({
+            status: 'error',
+            message: '因為密碼錯誤已達五次，帳號已被鎖定！',
+          });
+        }
+        return res
+          .status(401)
+          .json({ status: 'error', message: '請確認是否輸入正確的帳號密碼' });
+      } else {
         const payload = { id: user.id };
         const token = jwt.sign(payload, process.env.JWT_SECRET);
         return res.json({
@@ -62,10 +87,10 @@ const userController = {
             role: user.role,
           },
         });
-      })
-      .catch((err) => {
-        next(err);
-      });
+      }
+    } catch (err) {
+      next(err);
+    }
   },
   getCurrentUser: (req, res) => {
     const { id, name, email, role, password } = req.user;

@@ -102,17 +102,17 @@ export default {
           title: '登入成功！',
         });
       } catch (error) {
-        if (error.message === 'Network Error') {
-          this.password = '';
+        this.password = '';
+
+        if (error.response) {
+          Toast.fire({
+            icon: error.response.data.status,
+            title: error.response.data.message,
+          });
+        } else if (error.message === 'Network Error') {
           Toast.fire({
             icon: 'warning',
             title: '無法連線到伺服器！',
-          });
-        } else {
-          this.password = '';
-          Toast.fire({
-            icon: 'warning',
-            title: '請確認您輸入了正確的帳號密碼',
           });
         }
         this.isProcessing = false;

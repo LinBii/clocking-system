@@ -28,11 +28,7 @@ router.put(
   userController.updatePassword
 );
 
-router.post(
-  '/signin',
-  passport.authenticate('local', { session: false }),
-  userController.signIn
-);
+router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
 
 router.use('/', apiErrorHandler);
