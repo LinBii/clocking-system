@@ -30,6 +30,7 @@ export default {
     const clockedInValue = localStorage.getItem('clockedIn');
     const clockInTimeValue = localStorage.getItem('clockInTime');
     const clockOutTimeValue = localStorage.getItem('clockOutTime');
+    const dayChangeTimeValue = localStorage.getItem('dayChangeTime');
 
     const clockedInCheck = storeCheck(clockedInValue, store.state.clockedIn);
 
@@ -37,7 +38,7 @@ export default {
     const date = ref('');
     const clockInTime = ref(clockInTimeValue);
     const clockOutTime = ref(clockOutTimeValue);
-    const dayChangeTime = ref('');
+    const dayChangeTime = ref(dayChangeTimeValue);
 
     // Check if the absent message is logged
     let messageLogged = false;
@@ -55,15 +56,11 @@ export default {
     });
 
     async function clockIn() {
-      // TODO: No localStorage and commit when error
       clockInTime.value = dayjs.utc().local();
-      store.commit('setClockInTime', clockInTime.value);
-      localStorage.setItem('clockInTime', clockInTime.value);
 
       // date format in database is YYYY-MM-DD 00:00:00
       date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
 
-      // TODO: Store dayChangeTime or it will be reset
       // Check if it is past the day change time (GMT+8 05:00)
       dayChangeTime.value = dayjs(date.value)
         .add(1, 'day')
@@ -83,6 +80,10 @@ export default {
         if (data.status === 'error') {
           throw new Error(data.message);
         }
+        store.commit('setClockInTime', clockInTime.value);
+        localStorage.setItem('clockInTime', clockInTime.value);
+        // Store dayChangeTime
+        localStorage.setItem('dayChangeTime', dayChangeTime.value);
       } catch (error) {
         Toast.fire({
           icon: 'error',
@@ -92,10 +93,7 @@ export default {
     }
 
     async function clockOut() {
-      // TODO: No localStorage and commit when error
       clockOutTime.value = dayjs.utc().local();
-      store.commit('setClockOutTime', clockOutTime.value);
-      localStorage.setItem('clockOutTime', clockOutTime.value);
 
       const hour = dayjs().hour();
 
@@ -130,6 +128,8 @@ export default {
         if (data.status === 'error') {
           throw new Error(data.message);
         }
+        store.commit('setClockOutTime', clockOutTime.value);
+        localStorage.setItem('clockOutTime', clockOutTime.value);
       } catch (error) {
         Toast.fire({
           icon: 'error',
@@ -142,11 +142,11 @@ export default {
     setInterval(() => {
       currentTime.value = dayjs.utc().local().format();
 
-      // TODO: Clean up localStorage after dayChangeTime
       if (
         dayjs(currentTime.value).isAfter(dayChangeTime.value) &&
         !messageLogged
       ) {
+        // TODO: deal with absent
         if (absent.value === true && clockedIn.value === true) {
           console.log('Notify the admin that this user is absent');
         }
@@ -156,7 +156,11 @@ export default {
         clockedIn.value = false;
         store.commit('setClockedIn', false);
 
-        localStorage.setItem('clockedIn', false);
+        // Clean up localStorage after dayChangeTime
+        localStorage.removeItem('clockedIn');
+        localStorage.removeItem('clockInTime');
+        localStorage.removeItem('clockOutTime');
+        localStorage.removeItem('dayChangeTime');
       }
     }, 1000);
 
