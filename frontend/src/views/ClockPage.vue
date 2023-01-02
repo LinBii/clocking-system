@@ -160,6 +160,7 @@ export default {
         localStorage.removeItem('clockInTime');
         localStorage.removeItem('clockOutTime');
         localStorage.removeItem('dayChangeTime');
+        localStorage.removeItem('date');
       }
     }, 1000);
 
