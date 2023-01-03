@@ -46,13 +46,17 @@ export default {
       const object = JSON.parse(atob(data));
 
       // if first scan -> clock-in
-      if (!state.hasScanned) {
+      if (!state.hasScanned && clockedIn.value === false) {
         try {
           clockInTime.value = dayjs.utc().local();
 
           dayChangeTime.value = dayjs(object.date)
             .add(1, 'day')
             .format('YYYY-MM-DD 05:00:00');
+
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
 
           const { data } = await attendanceAPI.create({
             userId,
@@ -66,7 +70,40 @@ export default {
           localStorage.setItem('clockInTime', clockInTime.value);
           // Store dayChangeTime
           localStorage.setItem('dayChangeTime', dayChangeTime.value);
+
           state.hasScanned = true;
+        } catch (error) {
+          Toast.fire({
+            icon: 'error',
+            title: error.message,
+          });
+        }
+        // clock-out
+      } else {
+        clockOutTime.value = dayjs.utc().local();
+
+        // Set the clockOutTime ref to the current time, if it is later than the current value
+        if (!clockOutTime.value || dayjs.utc().local() > clockOutTime.value) {
+          clockOutTime.value = dayjs.utc().local();
+          store.commit('setClockOutTime', clockOutTime.value);
+          localStorage.setItem('clockOutTime', clockOutTime.value);
+
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
+        }
+
+        try {
+          const { data } = await attendanceAPI.update({
+            date: object.date,
+            userId: store.getters.userId,
+            clockOut: clockOutTime.value,
+          });
+          if (data.status === 'error') {
+            throw new Error(data.message);
+          }
+          store.commit('setClockOutTime', clockOutTime.value);
+          localStorage.setItem('clockOutTime', clockOutTime.value);
         } catch (error) {
           Toast.fire({
             icon: 'error',
