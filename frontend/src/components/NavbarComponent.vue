@@ -18,7 +18,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <router-link to="/admin" class="nav-link text-white mr-3"
+              <router-link
+                v-if="currentUser.role === 'admin'"
+                to="/admin"
+                class="nav-link text-white mr-3"
                 >管理員後台</router-link
               >
             </li>
@@ -81,6 +84,7 @@ export default {
     function logout() {
       store.commit('revokeAuthentication');
       router.push('/signin');
+      localStorage.clear();
     }
     return { logout, currentUser, isAuthenticated };
   },
