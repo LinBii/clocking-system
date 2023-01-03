@@ -156,7 +156,7 @@ export default {
 
     // Update currentTime ref every second
     setInterval(() => {
-      currentTime.value = dayjs.utc().local().format();
+      currentTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
       if (
         dayjs(currentTime.value).isAfter(dayChangeTime.value) &&
