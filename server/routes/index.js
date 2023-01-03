@@ -7,6 +7,7 @@ const passport = require('../config/passport.js');
 
 const attendanceController = require('../controllers/apis/attendance-controller');
 const userController = require('../controllers/apis/user-controller');
+const adminController = require('../controllers/apis/admin-controller');
 
 const { authenticated } = require('../middleware/api-auth');
 
@@ -27,6 +28,9 @@ router.put(
   upload.array(),
   userController.updatePassword
 );
+
+router.get('/admin/attendances', adminController.getAttendances);
+router.get('/admin/users', adminController.getUsers);
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);

@@ -73,7 +73,7 @@ export default {
     });
 
     async function clockIn() {
-      clockInTime.value = dayjs.utc().local();
+      clockInTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
       // date format in database is YYYY-MM-DD 00:00:00
       date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
@@ -109,7 +109,7 @@ export default {
     }
 
     async function clockOut() {
-      clockOutTime.value = dayjs.utc().local();
+      clockOutTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
       const hour = dayjs().hour();
 
@@ -126,7 +126,7 @@ export default {
 
       // Set the clockOutTime ref to the current time, if it is later than the current value
       if (!clockOutTime.value || dayjs.utc().local() > clockOutTime.value) {
-        clockOutTime.value = dayjs.utc().local();
+        clockOutTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);
 
@@ -156,7 +156,7 @@ export default {
 
     // Update currentTime ref every second
     setInterval(() => {
-      currentTime.value = dayjs.utc().local().format();
+      currentTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
       if (
         dayjs(currentTime.value).isAfter(dayChangeTime.value) &&

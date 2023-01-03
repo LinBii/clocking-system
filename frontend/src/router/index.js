@@ -5,6 +5,8 @@ import SignUp from '../views/SignUp.vue';
 import ClockPage from '../views/ClockPage.vue';
 import QRPage from '../views/QRPage.vue';
 import UserEdit from '../views/UserEdit.vue';
+import AdminAttendances from '../views/AdminAttendances.vue';
+import AdminUsers from '../views/AdminUsers.vue';
 import store from './../store';
 
 const routes = [
@@ -37,6 +39,21 @@ const routes = [
     path: '/users/:id/edit',
     name: 'user-edit',
     component: UserEdit,
+  },
+  {
+    path: '/admin',
+    exact: true,
+    redirect: '/admin/attendances',
+  },
+  {
+    path: '/admin/attendances',
+    name: 'admin-attendances',
+    component: AdminAttendances,
+  },
+  {
+    path: '/admin/users',
+    name: 'admin-users',
+    component: AdminUsers,
   },
   {
     path: '/:pathMatch(.*)*',
