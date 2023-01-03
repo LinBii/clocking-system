@@ -16,6 +16,17 @@ const adminController = {
       next(err);
     }
   },
+  getUsers: async (req, res, next) => {
+    try {
+      const users = await User.findAll({
+        attributes: ['id', 'name', 'email', 'role', 'isLocked'],
+      });
+
+      res.json(users);
+    } catch (err) {
+      next(err);
+    }
+  },
 };
 
 module.exports = adminController;

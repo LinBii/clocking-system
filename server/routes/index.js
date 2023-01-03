@@ -30,6 +30,7 @@ router.put(
 );
 
 router.get('/admin/attendances', adminController.getAttendances);
+router.get('/admin/users', adminController.getUsers);
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
