@@ -17,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
       date: DataTypes.DATE,
       clockIn: DataTypes.DATE,
       clockOut: DataTypes.DATE,
+      elapsedTime: DataTypes.INTEGER,
+      absent: DataTypes.BOOLEAN,
     },
     {
       sequelize,

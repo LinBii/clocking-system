@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User } = require('../../models');
+const { User, Attendance } = require('../../models');
 
 const userController = {
   signUp: (req, res, next) => {
@@ -111,6 +111,29 @@ const userController = {
       const hash = await bcrypt.hash(req.body.newPassword, 10);
       await user.update({ password: hash });
       return res.json({ status: 'success', message: '密碼更改成功！' });
+    } catch (err) {
+      next(err);
+    }
+  },
+  getAbsentUsers: async (req, res, next) => {
+    try {
+      const attendances = await Attendance.findAll({
+        where: {
+          absent: true,
+        },
+      });
+      const absentUserIds = attendances.map((attendance) => attendance.UserId);
+      const absentUsers = await User.findAll({
+        where: {
+          id: {
+            [Sequelize.Op.in]: absentUserIds,
+          },
+        },
+      });
+      return res.json({
+        status: 'success',
+        absentUsers,
+      });
     } catch (err) {
       next(err);
     }

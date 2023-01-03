@@ -1,4 +1,5 @@
 const { Attendance } = require('../../models');
+const dayjs = require('dayjs');
 
 let attendanceController = {
   postAttendance: async (req, res, next) => {
@@ -19,6 +20,8 @@ let attendanceController = {
         UserId: req.body.userId,
         date: req.body.date,
         clockIn: req.body.clockIn,
+        elapsedTime: 0,
+        absent: true,
       });
       return res.json({
         status: 'success',
@@ -39,9 +42,19 @@ let attendanceController = {
           message: 'attendance record not found',
         });
       }
+      // Calculate the elapsed time in seconds
+      const elapsedTime = dayjs(req.body.clockOut).diff(
+        dayjs(data.clockIn),
+        'second'
+      );
+      // Set the value of absent to true if elapsedTime is less than 8 hours (28800 seconds) and false otherwise
+      const absent = elapsedTime < 28800;
+      console.log(absent, elapsedTime);
       await Attendance.update(
         {
           clockOut: req.body.clockOut,
+          elapsedTime,
+          absent,
         },
         {
           where: { id: data.id },
