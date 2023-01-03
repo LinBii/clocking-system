@@ -43,7 +43,7 @@ export default {
 
     async function onDecode(data) {
       state.data = data;
-      const object = JSON.parse(atob(data));
+      const object = JSON.parse(atob(decodeURIComponent(data)));
 
       // if first scan -> clock-in
       if (!state.hasScanned && clockedIn.value === false) {
