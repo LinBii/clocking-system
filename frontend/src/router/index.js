@@ -9,6 +9,16 @@ import AdminAttendances from '../views/AdminAttendances.vue';
 import AdminUsers from '../views/AdminUsers.vue';
 import store from './../store';
 
+const authorizeIsAdmin = (to, from, next) => {
+  const currentUser = store.state.currentUser;
+  if (currentUser && currentUser.role !== 'admin') {
+    next('/not-found');
+    return;
+  }
+
+  next();
+};
+
 const routes = [
   {
     path: '/signin',
@@ -49,11 +59,13 @@ const routes = [
     path: '/admin/attendances',
     name: 'admin-attendances',
     component: AdminAttendances,
+    beforeEnter: authorizeIsAdmin,
   },
   {
     path: '/admin/users',
     name: 'admin-users',
     component: AdminUsers,
+    beforeEnter: authorizeIsAdmin,
   },
   {
     path: '/:pathMatch(.*)*',

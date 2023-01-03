@@ -40,7 +40,6 @@
 <script>
 import { ref, computed } from 'vue';
 import { mapState, useStore } from 'vuex';
-import { useRouter } from 'vue-router';
 import AdminNav from './../components/AdminNav.vue';
 import adminAPI from './../apis/admin';
 import { Toast } from './../utils/helpers';
@@ -50,16 +49,14 @@ export default {
     AdminNav,
   },
   setup() {
-    const router = useRouter();
     const store = useStore();
-    const storeState = mapState(['currentUser']);
+    const storeState = mapState(['currentUser', 'isAuthenticated']);
     const resultStoreState = {};
     Object.keys(storeState).map((item) => {
       const resFuc = storeState[item];
       resultStoreState[item] = computed(resFuc.bind({ $store: store }));
     });
-    const { currentUser } = { ...resultStoreState };
-
+    const { currentUser, isAuthenticated } = { ...resultStoreState };
     const users = ref([]);
 
     async function fetchUsers() {
@@ -82,6 +79,8 @@ export default {
     fetchUsers();
     return {
       users,
+      currentUser,
+      isAuthenticated,
     };
   },
 };

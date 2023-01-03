@@ -9,7 +9,17 @@ const attendanceController = require('../controllers/apis/attendance-controller'
 const userController = require('../controllers/apis/user-controller');
 const adminController = require('../controllers/apis/admin-controller');
 
-const { authenticated } = require('../middleware/api-auth');
+const authenticated = passport.authenticate('jwt', { session: false });
+const authenticatedAdmin = (req, res, next) => {
+  if (req.user) {
+    if (req.user.role === 'admin') {
+      return next();
+    }
+    return res.json({ status: 'error', message: '禁止存取！' });
+  } else {
+    return res.json({ status: 'error', message: '禁止存取！' });
+  }
+};
 
 const { apiErrorHandler } = require('../middleware/error-handler');
 
@@ -29,8 +39,18 @@ router.put(
   userController.updatePassword
 );
 
-router.get('/admin/attendances', adminController.getAttendances);
-router.get('/admin/users', adminController.getUsers);
+router.get(
+  '/admin/attendances',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getAttendances
+);
+router.get(
+  '/admin/users',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getUsers
+);
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
