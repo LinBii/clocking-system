@@ -1,14 +1,20 @@
 import { apiHelper } from './../utils/helpers';
 
+const getToken = () => localStorage.getItem('token');
+
 export default {
   attendances: {
     get() {
-      return apiHelper.get('/admin/attendances');
+      return apiHelper.get('/admin/attendances', {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
     },
   },
   users: {
     get() {
-      return apiHelper.get('/admin/users');
+      return apiHelper.get('/admin/users', {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
     },
   },
 };

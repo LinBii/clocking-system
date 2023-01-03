@@ -1,13 +1,8 @@
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const passportJWT = require('passport-jwt');
+const LocalStrategy = require('passport-local');
 const bcrypt = require('bcryptjs');
-
 const db = require('../models');
 const User = db.User;
-
-const JWTStrategy = passportJWT.Strategy;
-const ExtractJWT = passportJWT.ExtractJwt;
 
 passport.use(
   new LocalStrategy(
@@ -46,6 +41,22 @@ passport.use(
   )
 );
 
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findByPk(id)
+    .then((user) => {
+      return done(null, user.toJSON());
+    })
+    .catch((err) => done(err));
+});
+
+const passportJWT = require('passport-jwt');
+const JWTStrategy = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
+
 const jwtOptions = {
   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET,
@@ -58,17 +69,5 @@ passport.use(
       .catch((err) => done(err));
   })
 );
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  User.findByPk(id)
-    .then((user) => {
-      return done(null, user.toJSON());
-    })
-    .catch((err) => done(err));
-});
 
 module.exports = passport;
