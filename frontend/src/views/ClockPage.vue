@@ -1,16 +1,24 @@
 <template>
   <div class="container py-5">
-    <h1>歡迎來到PUNCHIN！</h1>
-    <p>現在時間： {{ currentTime }}</p>
-    <button :disabled="clockedIn" @click="clockIn">打卡上班</button>
-    <button :disabled="!clockedIn" @click="clockOut">打卡下班</button>
-    {{ clockInTimeValue }}
-    {{ clockOutTimeValue }}
-    {{ elapsedTime }}
-    {{ dayChangeTime }}
-    <p v-if="!clockedIn">您今天還沒打卡！</p>
-    <p v-if="clockedIn && absent">您今天的出勤狀況為缺勤！</p>
+    <div v-if="!isHoliday">
+      <h1>歡迎來到PUNCHIN！</h1>
+      <p>現在時間： {{ currentTime }}</p>
+      <button :disabled="clockedIn" @click="clockIn">打卡上班</button>
+      <button :disabled="!clockedIn" @click="clockOut">打卡下班</button>
+      {{ clockInTimeValue }}
+      {{ clockOutTimeValue }}
+      {{ dayChangeTime }}
+
+      <p v-if="!clockedIn">您今天還沒打卡！</p>
+      <p v-if="clockedIn">您今天的出勤狀況為缺勤！</p>
+      <ul>
+        <li v-for="entry in filteredCalendar" v-bind:key="entry.id">
+          {{ entry.西元日期 }} {{ entry.備註 }}
+        </li>
+      </ul>
+    </div>
   </div>
+  <div v-if="isHoliday">今天放假，好好休息！</div>
 </template>
 
 <script>
@@ -21,10 +29,17 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import attendanceAPI from './../apis/attendances';
 import { Toast, storeCheck } from './../utils/helpers';
+
+import calendar from '../data/calendar.json';
+
 dayjs.extend(utc, timezone);
 
 export default {
   setup() {
+    const filteredCalendar = computed(() => {
+      return calendar.filter((entry) => entry.是否放假 === '2');
+    });
+
     const store = useStore();
 
     const clockedInValue = localStorage.getItem('clockedIn');
@@ -46,13 +61,15 @@ export default {
     // check if the user is clocked in
     const clockedIn = ref(clockedInCheck);
 
-    const elapsedTime = dayjs(clockOutTime.value).diff(
-      dayjs(clockInTime.value),
-      'hour'
-    );
+    const isHoliday = filteredCalendar.value.some((entry) => {
+      const year = entry.西元日期.substring(0, 4);
+      const month = entry.西元日期.substring(4, 6);
+      const day = entry.西元日期.substring(6, 8);
 
-    const absent = computed(() => {
-      return elapsedTime < 8;
+      const entryDate = dayjs(`${year}-${month}-${day}`).format(
+        'YYYY-MM-DD 00:00:00'
+      );
+      return date.value === entryDate;
     });
 
     async function clockIn() {
@@ -146,9 +163,9 @@ export default {
         !messageLogged
       ) {
         // TODO: deal with absent
-        if (absent.value === true && clockedIn.value === true) {
-          console.log('Notify the admin that this user is absent');
-        }
+        // if (absent.value === true && clockedIn.value === true) {
+        //   console.log('Notify the admin that this user is absent');
+        // }
 
         clockOutTime.value = '';
 
@@ -168,12 +185,12 @@ export default {
       currentTime,
       clockInTimeValue,
       clockOutTimeValue,
-      elapsedTime,
       dayChangeTime,
       clockedIn,
       clockIn,
       clockOut,
-      absent,
+      filteredCalendar,
+      isHoliday,
     };
   },
 };
