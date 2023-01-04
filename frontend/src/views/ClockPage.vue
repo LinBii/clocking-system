@@ -3,8 +3,8 @@
     <div v-if="!isHoliday">
       <h1>歡迎來到PUNCHIN！</h1>
       <p>現在時間： {{ currentTime }}</p>
-      <button :disabled="clockedIn" @click="clockIn">打卡上班</button>
-      <button :disabled="!clockedIn" @click="clockOut">打卡下班</button>
+      <button v-if="!clockedIn" @click="clockIn">打卡上班</button>
+      <button v-else @click="clockOut">打卡下班</button>
       {{ clockInTimeValue }}
       {{ clockOutTimeValue }}
       {{ dayChangeTime }}
@@ -46,11 +46,12 @@ export default {
     const clockInTimeValue = localStorage.getItem('clockInTime');
     const clockOutTimeValue = localStorage.getItem('clockOutTime');
     const dayChangeTimeValue = localStorage.getItem('dayChangeTime');
+    const dateValue = localStorage.getItem('date');
 
     const clockedInCheck = storeCheck(clockedInValue, store.state.clockedIn);
 
     const currentTime = ref('');
-    const date = ref('');
+    const date = ref(dateValue);
     const clockInTime = ref(clockInTimeValue);
     const clockOutTime = ref(clockOutTimeValue);
     const dayChangeTime = ref(dayChangeTimeValue);
@@ -71,6 +72,10 @@ export default {
       );
       return date.value === entryDate;
     });
+
+    date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+    store.commit('setDate', date.value);
+    localStorage.setItem('date', date.value);
 
     async function clockIn() {
       clockInTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
@@ -96,9 +101,10 @@ export default {
         if (data.status === 'error') {
           throw new Error(data.message);
         }
+        store.commit('setDate', date.value);
+        localStorage.setItem('date', date.value);
         store.commit('setClockInTime', clockInTime.value);
         localStorage.setItem('clockInTime', clockInTime.value);
-        // Store dayChangeTime
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
       } catch (error) {
         Toast.fire({
@@ -131,8 +137,6 @@ export default {
         localStorage.setItem('clockOutTime', clockOutTime.value);
 
         clockedIn.value = true;
-        store.commit('setClockedIn', true);
-        localStorage.setItem('clockedIn', true);
       }
 
       try {
@@ -144,8 +148,12 @@ export default {
         if (data.status === 'error') {
           throw new Error(data.message);
         }
+        store.commit('setDate', date.value);
+        localStorage.setItem('date', date.value);
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);
+        store.commit('setClockedIn', true);
+        localStorage.setItem('clockedIn', true);
       } catch (error) {
         Toast.fire({
           icon: 'error',
