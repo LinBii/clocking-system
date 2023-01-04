@@ -1,31 +1,27 @@
 <template>
-  <h1 v-if="isHoliday">今天放假，好好休息！</h1>
-
+  <h2>GPS 打卡</h2>
+  <div v-if="isLoading">允許取得位置後，才能進行GPS打卡！</div>
   <div v-else>
-    <h2>GPS 打卡</h2>
-    <div v-if="isLoading">允許取得位置後，才能進行GPS打卡！</div>
-    <div v-else>
-      <button
-        v-if="!clockedIn"
-        :disabled="!withinRange"
-        @click="clockIn"
-        class="mt-3"
-      >
-        打卡上班
-      </button>
-      <button
-        v-else-if="clockedIn"
-        :disabled="!withinRange"
-        @click="clockOut"
-        class="mt-3"
-      >
-        打卡下班
-      </button>
-      <p>距離公司{{ distance }}公尺</p>
-      <p v-if="!withinRange">超出範圍，無法打卡！</p>
-    </div>
-    <div id="map" ref="mapContainer"></div>
+    <button
+      v-if="!clockedIn"
+      :disabled="!withinRange || isHoliday"
+      @click="clockIn"
+      class="mt-3"
+    >
+      打卡上班
+    </button>
+    <button
+      v-else-if="clockedIn"
+      :disabled="!withinRange || isHoliday"
+      @click="clockOut"
+      class="mt-3"
+    >
+      打卡下班
+    </button>
+    <p>距離公司{{ distance }}公尺</p>
+    <p v-if="!withinRange">超出範圍，無法打卡！</p>
   </div>
+  <div id="map" ref="mapContainer"></div>
 </template>
 
 <script>
@@ -33,14 +29,13 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import attendanceAPI from './../apis/attendances';
-import { Toast, storeCheck } from './../utils/helpers';
-import calendar from '../data/calendar.json';
+import { Toast, storeCheck, isHoliday } from './../utils/helpers';
 
 dayjs.extend(utc, timezone);
 
@@ -51,7 +46,6 @@ export default {
     const distance = ref('?');
     const withinRange = ref(false);
     const isLoading = ref(true);
-    let isHoliday = ref('');
 
     onMounted(async () => {
       await new Promise((resolve) => {
@@ -76,7 +70,6 @@ export default {
         attribution:
           '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map);
-      console.log(currentPosition.value);
 
       const redIcon = new L.Icon({
         iconUrl:
@@ -123,7 +116,6 @@ export default {
         currentPosition,
         distance,
         isLoading,
-        isHoliday,
       };
     });
 
@@ -144,21 +136,6 @@ export default {
 
     // check if the user is clocked in
     const clockedIn = ref(clockedInCheck);
-
-    const filteredCalendar = computed(() => {
-      return calendar.filter((entry) => entry.是否放假 === '2');
-    });
-
-    isHoliday = filteredCalendar.value.some((entry) => {
-      const year = entry.西元日期.substring(0, 4);
-      const month = entry.西元日期.substring(4, 6);
-      const day = entry.西元日期.substring(6, 8);
-
-      const entryDate = dayjs(`${year}-${month}-${day}`).format(
-        'YYYY-MM-DD 00:00:00'
-      );
-      return date.value === entryDate;
-    });
 
     // update date when entering the page
     date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
@@ -186,6 +163,11 @@ export default {
         });
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
         // update date and clockInTime only after success
         store.commit('setDate', date.value);
@@ -234,8 +216,13 @@ export default {
         });
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
-        store.commit('date', date.value);
+        store.commit('setDate', date.value);
         localStorage.setItem('date', date.value);
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);

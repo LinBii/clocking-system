@@ -25,7 +25,7 @@ let attendanceController = {
       });
       return res.json({
         status: 'success',
-        message: 'created new clock-in successfully',
+        message: '打卡上班成功！',
       });
     } catch (err) {
       next(err);
@@ -39,7 +39,7 @@ let attendanceController = {
       if (!data) {
         return res.json({
           status: 'error',
-          message: 'attendance record not found',
+          message: '找不到對應的打卡上班記錄！',
         });
       }
       // Calculate the elapsed time in seconds
@@ -63,7 +63,7 @@ let attendanceController = {
 
       return res.json({
         status: 'success',
-        message: 'updated clock-out successfully',
+        message: '打卡下班成功！',
       });
     } catch (err) {
       next(err);

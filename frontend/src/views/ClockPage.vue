@@ -1,5 +1,6 @@
 <template>
   <div class="container py-5">
+    <div v-if="isHoliday">今天放假，好好休息！</div>
     <div v-if="!isHoliday">
       <h1>歡迎來到PUNCHIN！</h1>
       <p>現在時間： {{ currentTime }}</p>
@@ -10,36 +11,23 @@
       {{ dayChangeTime }}
 
       <p v-if="!clockedIn">您今天還沒打卡！</p>
-      <p v-if="clockedIn">您今天的出勤狀況為缺勤！</p>
-      <ul>
-        <li v-for="entry in filteredCalendar" v-bind:key="entry.id">
-          {{ entry.西元日期 }} {{ entry.備註 }}
-        </li>
-      </ul>
     </div>
-    <div v-if="isHoliday">今天放假，好好休息！</div>
   </div>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useStore } from 'vuex';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import attendanceAPI from './../apis/attendances';
-import { Toast, storeCheck } from './../utils/helpers';
-
-import calendar from '../data/calendar.json';
+import { Toast, storeCheck, isHoliday } from './../utils/helpers';
 
 dayjs.extend(utc, timezone);
 
 export default {
   setup() {
-    const filteredCalendar = computed(() => {
-      return calendar.filter((entry) => entry.是否放假 === '2');
-    });
-
     const store = useStore();
 
     const clockedInValue = localStorage.getItem('clockedIn');
@@ -61,17 +49,6 @@ export default {
 
     // check if the user is clocked in
     const clockedIn = ref(clockedInCheck);
-
-    const isHoliday = filteredCalendar.value.some((entry) => {
-      const year = entry.西元日期.substring(0, 4);
-      const month = entry.西元日期.substring(4, 6);
-      const day = entry.西元日期.substring(6, 8);
-
-      const entryDate = dayjs(`${year}-${month}-${day}`).format(
-        'YYYY-MM-DD 00:00:00'
-      );
-      return date.value === entryDate;
-    });
 
     date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
     store.commit('setDate', date.value);
@@ -100,12 +77,18 @@ export default {
         });
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
         store.commit('setDate', date.value);
         localStorage.setItem('date', date.value);
         store.commit('setClockInTime', clockInTime.value);
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
+        console.log(data);
       } catch (error) {
         Toast.fire({
           icon: 'error',
@@ -147,6 +130,11 @@ export default {
         });
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
         store.commit('setDate', date.value);
         localStorage.setItem('date', date.value);
@@ -197,7 +185,6 @@ export default {
       clockedIn,
       clockIn,
       clockOut,
-      filteredCalendar,
       isHoliday,
     };
   },
