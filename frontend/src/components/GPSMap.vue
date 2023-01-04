@@ -31,6 +31,8 @@
 <script>
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { ref, onMounted, computed } from 'vue';
 import { useStore } from 'vuex';
 import dayjs from 'dayjs';
@@ -87,15 +89,24 @@ export default {
         shadowSize: [41, 41],
       });
 
+      const blueIcon = new L.Icon({
+        iconUrl: markerIcon,
+        shadowUrl: markerShadow,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      });
+
       // mark company position (red)
       L.marker([companyPosition.lat, companyPosition.long], {
         icon: redIcon,
       }).addTo(map);
 
       // mark current position (blue)
-      L.marker([currentPosition.value.lat, currentPosition.value.long]).addTo(
-        map
-      );
+      L.marker([currentPosition.value.lat, currentPosition.value.long], {
+        icon: blueIcon,
+      }).addTo(map);
 
       let latlong1 = L.latLng(
         currentPosition.value.lat,
