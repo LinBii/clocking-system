@@ -4,6 +4,7 @@ import SignIn from '../views/SignIn.vue';
 import SignUp from '../views/SignUp.vue';
 import ClockPage from '../views/ClockPage.vue';
 import QRPage from '../views/QRPage.vue';
+import GPSPage from '../views/GPSPage.vue';
 import UserEdit from '../views/UserEdit.vue';
 import AdminAttendances from '../views/AdminAttendances.vue';
 import AdminUsers from '../views/AdminUsers.vue';
@@ -44,6 +45,11 @@ const routes = [
     path: '/qrclocking',
     name: 'qrclocking',
     component: QRPage,
+  },
+  {
+    path: '/clocking/gps',
+    name: 'clocking-gps',
+    component: GPSPage,
   },
   {
     path: '/users/:id/edit',

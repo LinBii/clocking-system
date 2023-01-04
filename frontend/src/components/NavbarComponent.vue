@@ -43,7 +43,7 @@
               >
             </li>
             <li class="nav-item">
-              <router-link to="#" class="nav-link text-white mr-3"
+              <router-link to="/clocking/gps" class="nav-link text-white mr-3"
                 >GPS 打卡</router-link
               >
             </li>
