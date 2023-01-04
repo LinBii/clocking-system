@@ -67,6 +67,11 @@ export default {
           });
           if (data.status === 'error') {
             throw new Error(data.message);
+          } else if (data.status === 'success') {
+            Toast.fire({
+              icon: 'success',
+              title: data.message,
+            });
           }
           store.commit('setClockInTime', clockInTime.value);
           localStorage.setItem('clockInTime', clockInTime.value);
@@ -103,6 +108,11 @@ export default {
           });
           if (data.status === 'error') {
             throw new Error(data.message);
+          } else if (data.status === 'success') {
+            Toast.fire({
+              icon: 'success',
+              title: data.message,
+            });
           }
           store.commit('setClockOutTime', clockOutTime.value);
           localStorage.setItem('clockOutTime', clockOutTime.value);

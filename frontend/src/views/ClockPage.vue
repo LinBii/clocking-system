@@ -1,5 +1,6 @@
 <template>
   <div class="container py-5">
+    <div v-if="isHoliday">今天放假，好好休息！</div>
     <div v-if="!isHoliday">
       <h1>歡迎來到PUNCHIN！</h1>
       <p>現在時間： {{ currentTime }}</p>
@@ -10,14 +11,7 @@
       {{ dayChangeTime }}
 
       <p v-if="!clockedIn">您今天還沒打卡！</p>
-      <p v-if="clockedIn">您今天的出勤狀況為缺勤！</p>
-      <ul>
-        <li v-for="entry in filteredCalendar" v-bind:key="entry.id">
-          {{ entry.西元日期 }} {{ entry.備註 }}
-        </li>
-      </ul>
     </div>
-    <div v-if="isHoliday">今天放假，好好休息！</div>
   </div>
 </template>
 
@@ -100,12 +94,18 @@ export default {
         });
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
         store.commit('setDate', date.value);
         localStorage.setItem('date', date.value);
         store.commit('setClockInTime', clockInTime.value);
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
+        console.log(data);
       } catch (error) {
         Toast.fire({
           icon: 'error',
@@ -147,6 +147,11 @@ export default {
         });
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
         store.commit('setDate', date.value);
         localStorage.setItem('date', date.value);

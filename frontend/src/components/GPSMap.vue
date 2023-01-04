@@ -7,7 +7,7 @@
     <div v-else>
       <button
         v-if="!clockedIn"
-        :disabled="!withinRange"
+        :disabled="!withinRange || isHoliday"
         @click="clockIn"
         class="mt-3"
       >
@@ -15,7 +15,7 @@
       </button>
       <button
         v-else-if="clockedIn"
-        :disabled="!withinRange"
+        :disabled="!withinRange || isHoliday"
         @click="clockOut"
         class="mt-3"
       >
@@ -76,7 +76,6 @@ export default {
         attribution:
           '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map);
-      console.log(currentPosition.value);
 
       const redIcon = new L.Icon({
         iconUrl:
@@ -186,6 +185,11 @@ export default {
         });
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
         // update date and clockInTime only after success
         store.commit('setDate', date.value);
@@ -234,8 +238,13 @@ export default {
         });
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
-        store.commit('date', date.value);
+        store.commit('setDate', date.value);
         localStorage.setItem('date', date.value);
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);
