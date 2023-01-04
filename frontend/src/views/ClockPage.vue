@@ -17,8 +17,8 @@
         </li>
       </ul>
     </div>
+    <div v-if="isHoliday">今天放假，好好休息！</div>
   </div>
-  <div v-if="isHoliday">今天放假，好好休息！</div>
 </template>
 
 <script>
