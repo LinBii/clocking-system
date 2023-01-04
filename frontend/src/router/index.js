@@ -31,25 +31,27 @@ const routes = [
     name: 'sign-up',
     component: SignUp,
   },
+
   {
-    path: '/clocking',
-    name: 'clocking',
-    component: ClockPage,
-  },
-  {
-    path: '/qrclocking/read',
+    path: '/clocking/qrcode/read',
     name: 'read-qrclocking',
     component: QRPage,
   },
   {
-    path: '/qrclocking',
+    path: '/clocking/qrcode/generate',
     name: 'qrclocking',
     component: QRPage,
+    beforeEnter: authorizeIsAdmin,
   },
   {
     path: '/clocking/gps',
     name: 'clocking-gps',
     component: GPSPage,
+  },
+  {
+    path: '/clocking',
+    name: 'clocking',
+    component: ClockPage,
   },
   {
     path: '/users/:id/edit',

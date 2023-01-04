@@ -1,8 +1,10 @@
 <template>
-  <qr-stream @init="onInit" @decode="onDecode"></qr-stream>
-  <br />
+  <p>必須允許使用攝影機才能使用QR Code打卡！</p>
   <p>{{ errorText }}</p>
-  <p>Result: {{ state.data }}</p>
+  <div class="stream">
+    <qr-stream @init="onInit" @decode="onDecode"> </qr-stream>
+  </div>
+  <br />
 </template>
 
 <script>
@@ -121,7 +123,7 @@ export default {
       } catch (error) {
         console.log(error);
         if (error.name === 'NotAllowedError') {
-          errorText.value = 'Denied! No permission 允許攝影機功能後才能使用！';
+          errorText.value = '請允許使用攝影機功能！';
         } else if (error.name === 'NotFoundError') {
           errorText.value = 'no suitable camera device installed';
         } else if (error.name === 'NotSupportedError') {
@@ -139,7 +141,15 @@ export default {
       }
     }
 
-    return { onDecode, onInit, errorText, state };
+    return { onDecode, onInit, errorText };
   },
 };
 </script>
+
+<style scoped>
+.stream {
+  max-height: 500px;
+  max-width: 500px;
+  margin: auto;
+}
+</style>
