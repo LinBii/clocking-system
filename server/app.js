@@ -1,10 +1,17 @@
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
+const schedule = require('node-schedule');
 const routes = require('./routes');
 const passport = require('./config/passport');
+const { sendAbsentUserEmail } = require('./email/emailScheduler');
 const app = express();
 const port = process.env.PORT || 3000;
+
+schedule.scheduleJob('0 5 * * *', function () {
+  console.log('Send the mail at ' + new Date());
+});
+sendAbsentUserEmail();
 
 app.use(cors());
 
