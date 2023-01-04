@@ -14,6 +14,7 @@ export default createStore({
     clockedIn: false,
     clockInTime: '',
     clockOutTime: '',
+    date: '',
   },
   getters: {
     userId: (state) => state.currentUser.id,
@@ -41,6 +42,9 @@ export default createStore({
     },
     setClockOutTime(state, value) {
       state.clockOutTime = value;
+    },
+    setDate(state, value) {
+      state.date = value;
     },
   },
   actions: {
