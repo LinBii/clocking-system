@@ -17,7 +17,6 @@ export const Toast = Swal.mixin({
 
 export const storeCheck = (storeValue, storeState) => {
   let initialValue = null;
-  console.log(storeValue);
   if (storeValue && storeValue !== null) {
     try {
       initialValue = JSON.parse(storeValue);

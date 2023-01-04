@@ -1,9 +1,10 @@
 <template>
   <main>
     <div class="container py-5">
-      <a href="#/qrclocking">QR Generator</a> |
-      <a href="#/qrclocking/read">QR Reader</a> |
-      <p>必須允許使用相機才能使用QR Code打卡！</p>
+      <div v-if="currentUser.role === 'admin'">
+        <a href="#/clocking/qrcode/generate">產生QR Code</a>
+        | <a href="#/clocking/qrcode/read">讀取QR Code</a>
+      </div>
       <component :is="currentView" />
     </div>
   </main>
@@ -13,12 +14,24 @@
 import QRGenerator from '../components/QRGenerator.vue';
 import QRReader from '../components/QRReader.vue';
 import { computed, ref } from 'vue';
+import { mapState, useStore } from 'vuex';
 
 export default {
   setup() {
+    const store = useStore();
+    const storeState = mapState(['currentUser']);
+    const resultStoreState = {};
+    Object.keys(storeState).map((item) => {
+      const resFuc = storeState[item];
+      resultStoreState[item] = computed(resFuc.bind({ $store: store }));
+    });
+    const { currentUser } = { ...resultStoreState };
+
+    console.log(currentUser);
+
     const routes = {
-      '/qrclocking': QRGenerator,
-      '/qrclocking/read': QRReader,
+      '/clocking/qrcode/generate': QRGenerator,
+      '/clocking/qrcode/read': QRReader,
     };
 
     const currentPath = ref(window.location.hash);
@@ -28,10 +41,11 @@ export default {
     });
 
     const currentView = computed(() => {
+      console.log(currentPath.value.slice(1));
       return routes[currentPath.value.slice(1) || '/'] || 'NotFound';
     });
 
-    return { currentView };
+    return { currentView, currentUser };
   },
 };
 </script>

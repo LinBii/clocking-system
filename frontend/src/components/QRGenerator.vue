@@ -2,7 +2,6 @@
   <div class="container py-5">
     <qrcode-vue :value="value" :size="size"></qrcode-vue>
     <br />
-    {{ value }}
   </div>
 </template>
 
