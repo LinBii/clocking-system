@@ -99,6 +99,19 @@ export default {
       } else {
         clockOutTime.value = dayjs.utc().local();
 
+        const hour = dayjs().hour();
+
+        // When the clock out time is between 00:00 ~ 05:00, the date value would be considered as the day before
+        if (hour >= 0 && hour < 5) {
+          object.date = dayjs
+            .utc()
+            .local()
+            .subtract(1, 'day')
+            .format('YYYY-MM-DD 00:00:00');
+        } else {
+          object.date = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+        }
+
         // Set the clockOutTime ref to the current time, if it is later than the current value
         if (!clockOutTime.value || dayjs.utc().local() > clockOutTime.value) {
           clockOutTime.value = dayjs.utc().local();
