@@ -64,11 +64,6 @@ export default {
         .add(1, 'day')
         .format('YYYY-MM-DD 05:00:00');
 
-      // able the clock-out button, disable the clock-in button
-      clockedIn.value = true;
-      store.commit('setClockedIn', true);
-      localStorage.setItem('clockedIn', true);
-
       try {
         const { data } = await attendanceAPI.create({
           userId: store.getters.userId,
@@ -88,12 +83,23 @@ export default {
         store.commit('setClockInTime', clockInTime.value);
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
-        console.log(data);
+
+        // able the clock-out button, disable the clock-in button
+        clockedIn.value = true;
+        store.commit('setClockedIn', true);
+        localStorage.setItem('clockedIn', true);
       } catch (error) {
-        Toast.fire({
-          icon: 'error',
-          title: error.message,
-        });
+        if (error.message === 'Network Error') {
+          Toast.fire({
+            icon: 'warning',
+            title: '無法連線到伺服器！',
+          });
+        } else {
+          Toast.fire({
+            icon: 'error',
+            title: error.message,
+          });
+        }
       }
     }
 
@@ -118,8 +124,6 @@ export default {
         clockOutTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);
-
-        clockedIn.value = true;
       }
 
       try {
@@ -140,13 +144,22 @@ export default {
         localStorage.setItem('date', date.value);
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);
+
+        clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
       } catch (error) {
-        Toast.fire({
-          icon: 'error',
-          title: error.message,
-        });
+        if (error.message === 'Network Error') {
+          Toast.fire({
+            icon: 'warning',
+            title: '無法連線到伺服器！',
+          });
+        } else {
+          Toast.fire({
+            icon: 'error',
+            title: error.message,
+          });
+        }
       }
     }
 

@@ -49,7 +49,6 @@ let attendanceController = {
       );
       // Set the value of absent to true if elapsedTime is less than 8 hours (28800 seconds) and false otherwise
       const absent = elapsedTime < 28800;
-      console.log(absent, elapsedTime);
       await Attendance.update(
         {
           clockOut: req.body.clockOut,
