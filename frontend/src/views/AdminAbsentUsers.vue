@@ -9,7 +9,6 @@
           <th scope="col">名字</th>
           <th scope="col">Email</th>
           <th scope="col">權限角色</th>
-          <th scope="col">出缺勤調整</th>
         </tr>
       </thead>
       <tbody>
@@ -25,9 +24,6 @@
           </td>
           <td>
             {{ user.role }}
-          </td>
-          <td>
-            <button class="btn btn-danger btn-sm">清除缺勤</button>
           </td>
         </tr>
       </tbody>

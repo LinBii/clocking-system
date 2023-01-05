@@ -9,6 +9,15 @@ export default {
         headers: { Authorization: `Bearer ${getToken()}` },
       });
     },
+    put(attendanceId) {
+      return apiHelper.put(
+        `/admin/attendances/${attendanceId}`,
+        { attendanceId },
+        {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }
+      );
+    },
   },
   users: {
     get() {

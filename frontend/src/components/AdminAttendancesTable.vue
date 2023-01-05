@@ -8,6 +8,7 @@
         <th scope="col">上班時間</th>
         <th scope="col">下班時間</th>
         <th scope="col">缺勤</th>
+        <th scope="col">出缺勤調整</th>
       </tr>
     </thead>
     <tbody>
@@ -29,6 +30,15 @@
         </td>
         <td>
           {{ attendance.absent ? '是' : '否' }}
+        </td>
+        <td>
+          <button
+            v-if="attendance.absent"
+            class="btn btn-danger btn-sm"
+            @click="putAbsence(attendance)"
+          >
+            清除缺勤
+          </button>
         </td>
       </tr>
     </tbody>
@@ -86,12 +96,32 @@ export default {
       return dayjs.tz(clockOut, 'Asia/Taipei').format('YYYY-MM-DD HH:mm:ss');
     }
 
+    async function putAbsence(attendance) {
+      try {
+        const { data } = await adminAPI.attendances.put(attendance.id);
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法更新出缺勤狀態！',
+        });
+      }
+    }
+
     fetchAttendances();
 
     return {
       attendances,
       formattedClockIn,
       formattedClockOut,
+      putAbsence,
     };
   },
 };
