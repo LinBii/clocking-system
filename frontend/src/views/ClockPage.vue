@@ -20,8 +20,8 @@
         <p>上班時間：{{ clockInTimeValue }}</p>
         <p>下班時間：{{ clockOutTimeValue }}</p>
       </div>
+      <h2 v-if="!clockedIn">您今天還沒打卡！</h2>
     </div>
-    <h2 v-if="!clockedIn">您今天還沒打卡！</h2>
   </div>
 </template>
 
@@ -96,6 +96,11 @@ export default {
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
       } catch (error) {
+        if (error.message === '今天已經打卡上班了！') {
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
+        }
         if (error.message === 'Network Error') {
           Toast.fire({
             icon: 'warning',

@@ -178,6 +178,11 @@ export default {
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
       } catch (error) {
+        if (error.message === '今天已經打卡上班了！') {
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
+        }
         if (error.message === 'Network Error') {
           Toast.fire({
             icon: 'warning',
