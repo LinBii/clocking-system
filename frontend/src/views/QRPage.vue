@@ -2,7 +2,8 @@
   <main>
     <div class="container py-5">
       <h2 v-if="isHoliday">今天放假，好好休息！</h2>
-      <div v-else>
+      <div v-else class="text-center">
+        <h2>QR Code 打卡</h2>
         <div v-if="currentUser.role === 'admin'">
           <a href="#/clocking/qrcode/generate">產生QR Code</a>
           | <a href="#/clocking/qrcode/read">讀取QR Code</a>

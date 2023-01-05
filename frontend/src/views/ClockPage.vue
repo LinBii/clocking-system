@@ -1,17 +1,27 @@
 <template>
   <div class="container py-5">
-    <div v-if="isHoliday">今天放假，好好休息！</div>
-    <div v-if="!isHoliday">
-      <h1>歡迎來到PUNCHIN！</h1>
-      <p>現在時間： {{ currentTime }}</p>
-      <button v-if="!clockedIn" @click="clockIn">打卡上班</button>
-      <button v-else @click="clockOut">打卡下班</button>
-      {{ clockInTimeValue }}
-      {{ clockOutTimeValue }}
-      {{ dayChangeTime }}
-
-      <p v-if="!clockedIn">您今天還沒打卡！</p>
+    <div class="text-center">
+      <h1>歡迎來到PUNCHIN考勤系統</h1>
+      <h2>{{ currentTime }}</h2>
+      <div v-if="isHoliday" class="my-3">今天放假，好好休息！</div>
+      <div v-if="!isHoliday" class="my-3">
+        <button
+          v-if="!clockedIn"
+          @click="clockIn"
+          class="btn btn-primary btn-lg"
+        >
+          打卡上班
+        </button>
+        <button v-else @click="clockOut" class="btn btn-primary btn-lg">
+          打卡下班
+        </button>
+      </div>
+      <div>
+        <p>上班時間：{{ clockInTimeValue }}</p>
+        <p>下班時間：{{ clockOutTimeValue }}</p>
+      </div>
     </div>
+    <h2 v-if="!clockedIn">您今天還沒打卡！</h2>
   </div>
 </template>
 
@@ -43,9 +53,6 @@ export default {
     const clockInTime = ref(clockInTimeValue);
     const clockOutTime = ref(clockOutTimeValue);
     const dayChangeTime = ref(dayChangeTimeValue);
-
-    // Check if the absent message is logged
-    let messageLogged = false;
 
     // check if the user is clocked in
     const clockedIn = ref(clockedInCheck);
@@ -167,17 +174,8 @@ export default {
     setInterval(() => {
       currentTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
-      if (
-        dayjs(currentTime.value).isAfter(dayChangeTime.value) &&
-        !messageLogged
-      ) {
-        // TODO: deal with absent
-        // if (absent.value === true && clockedIn.value === true) {
-        //   console.log('Notify the admin that this user is absent');
-        // }
-
+      if (dayjs(currentTime.value).isAfter(dayChangeTime.value)) {
         clockOutTime.value = '';
-
         clockedIn.value = false;
         store.commit('setClockedIn', false);
 
