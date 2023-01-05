@@ -2,20 +2,20 @@
   <div class="container py-5">
     <AdminNav />
 
-    <table class="table">
-      <thead class="thead-dark">
+    <table class="table table-hover table-striped text-center">
+      <thead class="table-light">
         <tr>
-          <th>ID</th>
-          <th>名字</th>
-          <th>Email</th>
-          <th>權限角色</th>
-          <th>是否上鎖</th>
-          <th>互動</th>
+          <th scope="col">ID</th>
+          <th scope="col">名字</th>
+          <th scope="col">Email</th>
+          <th scope="col">權限角色</th>
+          <th scope="col">是否上鎖</th>
+          <th scope="col">解鎖</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="user in users" :key="user.id">
-          <th>
+          <th scope="row">
             {{ user.id }}
           </th>
           <td>
@@ -30,7 +30,11 @@
           <td>
             {{ user.isLocked ? '是' : '否' }}
           </td>
-          <td>改為出勤</td>
+          <td>
+            <button v-if="user.isLocked" class="btn btn-danger btn-sm">
+              解鎖
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
