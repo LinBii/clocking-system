@@ -71,6 +71,19 @@ export default {
         .add(1, 'day')
         .format('YYYY-MM-DD 05:00:00');
 
+      const hour = dayjs().hour();
+
+      // When the clock in time is between 00:00 ~ 05:00, the date value would be considered as the day before
+      if (hour >= 0 && hour < 5) {
+        date.value = dayjs
+          .utc()
+          .local()
+          .subtract(1, 'day')
+          .format('YYYY-MM-DD 00:00:00');
+      } else {
+        date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+      }
+
       try {
         const { data } = await attendanceAPI.create({
           userId: store.getters.userId,
@@ -91,7 +104,7 @@ export default {
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
 
-        // able the clock-out button, disable the clock-in button
+        // Enable the clock-out button, disable the clock-in button
         clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
