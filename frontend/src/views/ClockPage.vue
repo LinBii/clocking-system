@@ -8,11 +8,11 @@
         <button
           v-if="!clockedIn"
           @click="clockIn"
-          class="btn btn-primary btn-lg"
+          class="btn btn-primary btn-circle"
         >
           打卡上班
         </button>
-        <button v-else @click="clockOut" class="btn btn-primary btn-lg">
+        <button v-else @click="clockOut" class="btn btn-primary btn-circle">
           打卡下班
         </button>
       </div>
@@ -206,3 +206,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.btn-circle {
+  width: 140px;
+  height: 140px;
+  padding: 20px 32px;
+  border-radius: 70px;
+  font-size: 36px;
+  line-height: 1.33;
+}
+</style>

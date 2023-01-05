@@ -7,7 +7,7 @@
         v-if="!clockedIn"
         :disabled="!withinRange || isHoliday"
         @click="clockIn"
-        class="mt-3 btn btn-primary btn-lg"
+        class="mt-3 btn btn-primary btn-circle"
       >
         打卡上班
       </button>
@@ -15,7 +15,7 @@
         v-else-if="clockedIn"
         :disabled="!withinRange || isHoliday"
         @click="clockOut"
-        class="mt-3 btn btn-primary btn-lg"
+        class="mt-3 btn btn-primary btn-circle"
       >
         打卡下班
       </button>
@@ -272,11 +272,14 @@ export default {
 #map {
   height: 50vh;
   width: 50vh;
-}
-</style>
-
-<style scoped>
-#map {
   margin: auto;
+}
+.btn-circle {
+  width: 140px;
+  height: 140px;
+  padding: 20px 32px;
+  border-radius: 70px;
+  font-size: 36px;
+  line-height: 1.33;
 }
 </style>
