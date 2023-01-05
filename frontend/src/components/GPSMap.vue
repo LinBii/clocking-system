@@ -1,27 +1,29 @@
 <template>
-  <h2>GPS 打卡</h2>
-  <div v-if="isLoading">允許取得位置後，才能進行GPS打卡！</div>
-  <div v-else>
-    <button
-      v-if="!clockedIn"
-      :disabled="!withinRange || isHoliday"
-      @click="clockIn"
-      class="mt-3"
-    >
-      打卡上班
-    </button>
-    <button
-      v-else-if="clockedIn"
-      :disabled="!withinRange || isHoliday"
-      @click="clockOut"
-      class="mt-3"
-    >
-      打卡下班
-    </button>
-    <p>距離公司{{ distance }}公尺</p>
-    <p v-if="!withinRange">超出範圍，無法打卡！</p>
+  <div class="text-center">
+    <h2>GPS 打卡</h2>
+    <div v-if="isLoading">允許取得位置後，才能進行GPS打卡！</div>
+    <div v-else>
+      <button
+        v-if="!clockedIn"
+        :disabled="!withinRange || isHoliday"
+        @click="clockIn"
+        class="mt-3 btn btn-primary btn-lg"
+      >
+        打卡上班
+      </button>
+      <button
+        v-else-if="clockedIn"
+        :disabled="!withinRange || isHoliday"
+        @click="clockOut"
+        class="mt-3 btn btn-primary btn-lg"
+      >
+        打卡下班
+      </button>
+      <p class="mt-3">距離公司{{ distance }}公尺</p>
+      <p v-if="!withinRange">超出範圍，無法打卡！</p>
+    </div>
+    <div id="map" ref="mapContainer"></div>
   </div>
-  <div id="map" ref="mapContainer"></div>
 </template>
 
 <script>
@@ -176,6 +178,11 @@ export default {
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
       } catch (error) {
+        if (error.message === '今天已經打卡上班了！') {
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
+        }
         if (error.message === 'Network Error') {
           Toast.fire({
             icon: 'warning',
@@ -265,5 +272,11 @@ export default {
 #map {
   height: 50vh;
   width: 50vh;
+}
+</style>
+
+<style scoped>
+#map {
+  margin: auto;
 }
 </style>

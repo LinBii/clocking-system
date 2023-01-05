@@ -10,6 +10,10 @@ let attendanceController = {
       });
     }
     try {
+      const date = dayjs();
+      if (date !== req.body.date) {
+        return res.json({ status: 'error', message: '出勤日期不正確！' });
+      }
       const data = await Attendance.findOne({
         where: { date: req.body.date, UserId: req.body.userId },
       });

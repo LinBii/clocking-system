@@ -1,7 +1,6 @@
 <template>
-  <div class="container py-5">
+  <div class="qrcode py-5">
     <qrcode-vue :value="value" :size="size"></qrcode-vue>
-    <br />
   </div>
 </template>
 
@@ -43,3 +42,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#qrcode {
+  margin: auto;
+}
+</style>

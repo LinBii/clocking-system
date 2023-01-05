@@ -1,5 +1,4 @@
 <template>
-  <p>必須允許使用攝影機才能使用QR Code打卡！</p>
   <p>{{ errorText }}</p>
   <div class="stream">
     <qr-stream @init="onInit" @decode="onDecode"> </qr-stream>
@@ -79,6 +78,11 @@ export default {
 
           state.hasScanned = true;
         } catch (error) {
+          if (error.message === '今天已經打卡上班了！') {
+            clockedIn.value = true;
+            store.commit('setClockedIn', true);
+            localStorage.setItem('clockedIn', true);
+          }
           if (error.message === 'Network Error') {
             Toast.fire({
               icon: 'warning',

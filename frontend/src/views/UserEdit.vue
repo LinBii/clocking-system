@@ -5,7 +5,7 @@
         <h1 class="h3 mb-3 font-weight-normal">修改密碼</h1>
       </div>
 
-      <div class="mb-3">
+      <div class="mb-3 col-xs-4">
         <label for="new-password">新密碼</label>
         <input
           id="new-password"
@@ -30,8 +30,9 @@
           autocomplete="new-password"
         />
       </div>
-
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">提交</button>
+      </div>
     </form>
   </div>
 </template>
