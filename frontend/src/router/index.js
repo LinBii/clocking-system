@@ -8,6 +8,7 @@ import GPSPage from '../views/GPSPage.vue';
 import UserEdit from '../views/UserEdit.vue';
 import AdminAttendances from '../views/AdminAttendances.vue';
 import AdminUsers from '../views/AdminUsers.vue';
+import AdminAbsentUsers from '../views/AdminAbsentUsers.vue';
 import store from './../store';
 
 const authorizeIsAdmin = (to, from, next) => {
@@ -67,6 +68,12 @@ const routes = [
     path: '/admin/attendances',
     name: 'admin-attendances',
     component: AdminAttendances,
+    beforeEnter: authorizeIsAdmin,
+  },
+  {
+    path: '/admin/users/absent',
+    name: 'admin-absent-users',
+    component: AdminAbsentUsers,
     beforeEnter: authorizeIsAdmin,
   },
   {

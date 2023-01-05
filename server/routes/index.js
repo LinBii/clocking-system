@@ -45,11 +45,23 @@ router.get(
   authenticatedAdmin,
   adminController.getAttendances
 );
+router.put(
+  '/admin/attendances/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.putAbsence
+);
 router.get(
   '/admin/users',
   authenticated,
   authenticatedAdmin,
   adminController.getUsers
+);
+router.get(
+  '/admin/users/absent',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getAbsentUsers
 );
 
 router.post('/signin', userController.signIn);

@@ -10,7 +10,7 @@ let attendanceController = {
       });
     }
     try {
-      const date = dayjs();
+      const date = dayjs().format('YYYY-MM-DD 00:00:00');
       if (date !== req.body.date) {
         return res.json({ status: 'error', message: '出勤日期不正確！' });
       }
@@ -37,6 +37,10 @@ let attendanceController = {
   },
   updateAttendance: async (req, res, next) => {
     try {
+      const date = dayjs().format('YYYY-MM-DD 00:00:00');
+      if (date !== req.body.date) {
+        return res.json({ status: 'error', message: '出勤日期不正確！' });
+      }
       const data = await Attendance.findOne({
         where: { date: req.body.date, UserId: req.body.userId },
       });
