@@ -47,18 +47,13 @@ export default {
       state.data = data;
       const object = JSON.parse(atob(decodeURIComponent(data)));
 
-      // if first scan -> clock-in
+      // if first scan and first clock-in -> clock-in
       if (!state.hasScanned && clockedIn.value === false) {
         try {
           clockInTime.value = dayjs.utc().local();
-
           dayChangeTime.value = dayjs(object.date)
             .add(1, 'day')
             .format('YYYY-MM-DD 05:00:00');
-
-          clockedIn.value = true;
-          store.commit('setClockedIn', true);
-          localStorage.setItem('clockedIn', true);
 
           const { data } = await attendanceAPI.create({
             userId,
@@ -78,12 +73,23 @@ export default {
           // Store dayChangeTime
           localStorage.setItem('dayChangeTime', dayChangeTime.value);
 
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
+
           state.hasScanned = true;
         } catch (error) {
-          Toast.fire({
-            icon: 'error',
-            title: error.message,
-          });
+          if (error.message === 'Network Error') {
+            Toast.fire({
+              icon: 'warning',
+              title: '無法連線到伺服器！',
+            });
+          } else {
+            Toast.fire({
+              icon: 'error',
+              title: error.message,
+            });
+          }
         }
         // clock-out
       } else {
@@ -92,12 +98,6 @@ export default {
         // Set the clockOutTime ref to the current time, if it is later than the current value
         if (!clockOutTime.value || dayjs.utc().local() > clockOutTime.value) {
           clockOutTime.value = dayjs.utc().local();
-          store.commit('setClockOutTime', clockOutTime.value);
-          localStorage.setItem('clockOutTime', clockOutTime.value);
-
-          clockedIn.value = true;
-          store.commit('setClockedIn', true);
-          localStorage.setItem('clockedIn', true);
         }
 
         try {
@@ -116,11 +116,22 @@ export default {
           }
           store.commit('setClockOutTime', clockOutTime.value);
           localStorage.setItem('clockOutTime', clockOutTime.value);
+
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
         } catch (error) {
-          Toast.fire({
-            icon: 'error',
-            title: error.message,
-          });
+          if (error.message === 'Network Error') {
+            Toast.fire({
+              icon: 'warning',
+              title: '無法連線到伺服器！',
+            });
+          } else {
+            Toast.fire({
+              icon: 'error',
+              title: error.message,
+            });
+          }
         }
       }
     }
