@@ -88,7 +88,6 @@ export default {
         store.commit('setClockInTime', clockInTime.value);
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
-        console.log(data);
       } catch (error) {
         Toast.fire({
           icon: 'error',

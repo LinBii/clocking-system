@@ -129,9 +129,7 @@ export default {
       try {
         const { capabilities } = await promise;
         // successfully initialized
-        console.log(capabilities);
       } catch (error) {
-        console.log(error);
         if (error.name === 'NotAllowedError') {
           errorText.value = '請允許使用攝影機功能！';
         } else if (error.name === 'NotFoundError') {

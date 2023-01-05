@@ -36,8 +36,6 @@ const filteredCalendar = () => {
   return calendar.filter((entry) => entry.是否放假 === '2');
 };
 
-console.log(filteredCalendar());
-
 const date = localStorage.getItem('date');
 
 export const isHoliday = filteredCalendar().some((entry) => {
