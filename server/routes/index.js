@@ -51,6 +51,12 @@ router.get(
   authenticatedAdmin,
   adminController.getUsers
 );
+router.get(
+  '/admin/users/absent',
+  authenticated,
+  authenticatedAdmin,
+  adminController.getAbsentUsers
+);
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);

@@ -20,6 +20,30 @@ const adminController = {
     try {
       const users = await User.findAll({
         attributes: ['id', 'name', 'email', 'role', 'isLocked'],
+        include: [
+          {
+            model: Attendance,
+          },
+        ],
+      });
+
+      res.json(users);
+    } catch (err) {
+      next(err);
+    }
+  },
+  getAbsentUsers: async (req, res, next) => {
+    try {
+      const users = await User.findAll({
+        attributes: ['id', 'name', 'email', 'role', 'isLocked'],
+        include: [
+          {
+            model: Attendance,
+            where: {
+              absent: true,
+            },
+          },
+        ],
       });
 
       res.json(users);

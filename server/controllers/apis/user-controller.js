@@ -115,29 +115,6 @@ const userController = {
       next(err);
     }
   },
-  getAbsentUsers: async (req, res, next) => {
-    try {
-      const attendances = await Attendance.findAll({
-        where: {
-          absent: true,
-        },
-      });
-      const absentUserIds = attendances.map((attendance) => attendance.UserId);
-      const absentUsers = await User.findAll({
-        where: {
-          id: {
-            [Sequelize.Op.in]: absentUserIds,
-          },
-        },
-      });
-      return res.json({
-        status: 'success',
-        absentUsers,
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
 };
 
 module.exports = userController;
