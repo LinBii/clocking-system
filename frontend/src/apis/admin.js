@@ -17,4 +17,11 @@ export default {
       });
     },
   },
+  absentUsers: {
+    get() {
+      return apiHelper.get('/admin/users/absent', {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+    },
+  },
 };

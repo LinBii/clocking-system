@@ -1,18 +1,18 @@
 <template>
-  <table class="table">
-    <thead class="thead-dark">
+  <table class="table table-hover table-striped text-center">
+    <thead class="table-light">
       <tr>
-        <th>ID</th>
-        <th>名字</th>
-        <th>日期</th>
-        <th>上班時間</th>
-        <th>下班時間</th>
-        <th>缺勤</th>
+        <th scope="col">ID</th>
+        <th scope="col">名字</th>
+        <th scope="col">日期</th>
+        <th scope="col">上班時間</th>
+        <th scope="col">下班時間</th>
+        <th scope="col">缺勤</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="attendance in attendances" :key="attendance.id">
-        <th>
+        <th scope="row">
           {{ attendance.id }}
         </th>
         <td>
