@@ -25,7 +25,7 @@ export default {
     });
 
     let value = ref('hr:defaultdata.random');
-    let size = ref(300);
+    let size = ref(250);
 
     date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
     localStorage.setItem('date', date.value);

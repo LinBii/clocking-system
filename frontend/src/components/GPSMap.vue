@@ -1,7 +1,9 @@
 <template>
-  <div class="text-center">
-    <h2>GPS 打卡</h2>
-    <div v-if="isLoading">允許取得位置後，才能進行GPS打卡！</div>
+  <div class="text-center container">
+    <h1 class="fw-bold">GPS 打卡</h1>
+    <div v-if="isLoading" class="my-3 fw-bold">
+      允許取得位置後，才能進行GPS打卡！
+    </div>
     <div v-else>
       <button
         v-if="!clockedIn"
@@ -19,8 +21,8 @@
       >
         <p class="mb-0">打卡下班</p>
       </button>
-      <p class="mt-3">距離公司{{ distance }}公尺</p>
-      <p v-if="!withinRange">超出範圍，無法打卡！</p>
+      <p class="my-3">距離公司{{ distance }}公尺</p>
+      <p v-if="!withinRange" class="my-3">超出範圍，無法打卡！</p>
     </div>
     <div id="map" ref="mapContainer"></div>
   </div>
@@ -283,15 +285,18 @@ export default {
 
 <style scoped>
 #map {
-  height: 50vh;
-  width: 50vh;
+  height: 40vh;
+  width: 70vw;
   margin: auto;
 }
 .btn-circle {
   width: 140px;
   height: 140px;
   border-radius: 70px;
-  font-size: 5vh;
+  font-size: 1.5em;
   line-height: 1.33;
+}
+.container {
+  width: 80vw;
 }
 </style>

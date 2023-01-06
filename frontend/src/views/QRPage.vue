@@ -1,16 +1,18 @@
 <template>
   <main>
     <div class="container py-5">
-      <h2 v-if="isHoliday">今天放假，好好休息！</h2>
+      <div v-if="isHoliday" class="text-center">
+        <h1>今天放假，好好休息！</h1>
+      </div>
       <div v-else class="text-center">
-        <h2>QR Code 打卡</h2>
-        <p>必須允許使用攝影機才能使用QR Code打卡！</p>
+        <h1 class="fw-bold">QR Code 打卡</h1>
+        <p class="my-3 fw-bold">必須允許使用攝影機才能使用QR Code打卡！</p>
         <div v-if="currentUser.role === 'admin'">
           <a href="#/clocking/qrcode/generate">產生QR Code</a>
           | <a href="#/clocking/qrcode/read">讀取QR Code</a>
-          <div>
-            <component :is="currentView" />
-          </div>
+        </div>
+        <div>
+          <component :is="currentView" />
         </div>
       </div>
     </div>
@@ -56,8 +58,8 @@ export default {
 </script>
 
 <style scoped>
-main {
+.container {
   margin: auto;
-  width: 75%;
+  width: 80vw;
 }
 </style>

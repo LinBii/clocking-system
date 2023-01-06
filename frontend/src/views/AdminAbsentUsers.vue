@@ -1,33 +1,34 @@
 <template>
   <div class="container py-5">
     <AdminNav />
-
-    <table class="table table-hover table-striped text-center">
-      <thead class="table-light">
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">名字</th>
-          <th scope="col">Email</th>
-          <th scope="col">權限角色</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <th scope="row">
-            {{ user.id }}
-          </th>
-          <td>
-            {{ user.name }}
-          </td>
-          <td>
-            {{ user.email }}
-          </td>
-          <td>
-            {{ user.role }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped text-center">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">名字</th>
+            <th scope="col">Email</th>
+            <th scope="col">權限角色</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id">
+            <th scope="row" class="id">
+              {{ user.id }}
+            </th>
+            <td class="name">
+              {{ user.name }}
+            </td>
+            <td class="email">
+              {{ user.email }}
+            </td>
+            <td class="role">
+              {{ user.role }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -84,5 +85,8 @@ export default {
 .button {
   display: inline-block;
   height: 24px;
+}
+.container {
+  width: 80vw;
 }
 </style>

@@ -8,30 +8,30 @@
         <th scope="col">上班時間</th>
         <th scope="col">下班時間</th>
         <th scope="col">缺勤</th>
-        <th scope="col">出缺勤調整</th>
+        <th scope="col">清除缺勤</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="attendance in attendances" :key="attendance.id">
-        <th scope="row">
+        <th scope="row" class="id">
           {{ attendance.id }}
         </th>
-        <td>
+        <td class="name">
           {{ attendance.User.name }}
         </td>
-        <td>
+        <td class="date">
           {{ attendance.date }}
         </td>
-        <td>
+        <td class="time">
           {{ attendance.clockIn }}
         </td>
-        <td>
+        <td class="time">
           {{ attendance.clockOut }}
         </td>
-        <td>
+        <td class="absent">
           {{ attendance.absent ? '是' : '否' }}
         </td>
-        <td>
+        <td class="put-absent">
           <button
             v-if="attendance.absent"
             class="btn btn-danger btn-sm"

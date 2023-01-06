@@ -1,30 +1,26 @@
 <template>
   <div class="container py-5">
-    <div class="text-center">
-      <h1>歡迎來到PUNCHIN考勤系統</h1>
-      <h2>{{ currentTime }}</h2>
+    <div class="text-center d-flex flex-column align-items-center">
+      <h1 class="fw-bold">歡迎來到PUNCHIN考勤系統</h1>
       <div v-if="isHoliday" class="my-3">今天放假，好好休息！</div>
       <div v-if="!isHoliday" class="my-3">
         <button
           v-if="!clockedIn"
           @click="clockIn"
-          class="btn btn-outline-danger btn-circle"
+          class="btn btn-danger btn-circle"
         >
           <p class="mb-0">打卡上班</p>
         </button>
-        <button
-          v-else
-          @click="clockOut"
-          class="btn btn-outline-success btn-circle"
-        >
+        <button v-else @click="clockOut" class="btn btn-success btn-circle">
           <p class="mb-0">打卡下班</p>
         </button>
       </div>
-      <div>
+      <h2 v-if="isLoading" class="loading my-3">Is loading</h2>
+      <h2 v-else class="my-3">{{ currentTime }}</h2>
+      <div class="my-3">
         <p v-if="clockInTimeValue">上班時間：{{ clockInTimeValue }}</p>
         <p v-if="clockOutTimeValue">下班時間：{{ clockOutTimeValue }}</p>
       </div>
-      <h2 v-if="!clockedIn">您今天還沒打卡！</h2>
     </div>
   </div>
 </template>
@@ -52,6 +48,7 @@ export default {
 
     const clockedInCheck = storeCheck(clockedInValue, store.state.clockedIn);
 
+    const isLoading = ref(true);
     const currentTime = ref('');
     const date = ref(dateValue);
     const clockInTime = ref(clockInTimeValue);
@@ -196,6 +193,8 @@ export default {
     setInterval(() => {
       currentTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
+      isLoading.value = false;
+
       if (dayjs(currentTime.value).isAfter(dayChangeTime.value)) {
         clockOutTime.value = '';
         clockedIn.value = false;
@@ -219,6 +218,7 @@ export default {
       clockIn,
       clockOut,
       isHoliday,
+      isLoading,
     };
   },
 };
@@ -229,7 +229,13 @@ export default {
   width: 140px;
   height: 140px;
   border-radius: 70px;
-  font-size: 5vh;
+  font-size: 1.5em;
   line-height: 1.33;
+}
+.loading {
+  color: #fff;
+}
+.container {
+  width: 80vw;
 }
 </style>

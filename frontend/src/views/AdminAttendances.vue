@@ -2,9 +2,10 @@
   <div class="container py-5">
     <!-- AdminNav -->
     <AdminNav />
-
-    <!-- AdminAttendancesTable -->
-    <AdminAttendancesTable />
+    <div class="table-responsive">
+      <!-- AdminAttendancesTable -->
+      <AdminAttendancesTable />
+    </div>
   </div>
 </template>
 
@@ -19,3 +20,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.container {
+  width: 80vw;
+}
+</style>
