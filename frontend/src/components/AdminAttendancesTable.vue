@@ -1,18 +1,19 @@
 <template>
-  <table class="table">
-    <thead class="thead-dark">
+  <table class="table table-hover table-striped text-center">
+    <thead class="table-light">
       <tr>
-        <th>ID</th>
-        <th>名字</th>
-        <th>日期</th>
-        <th>上班時間</th>
-        <th>下班時間</th>
-        <th>缺勤</th>
+        <th scope="col">ID</th>
+        <th scope="col">名字</th>
+        <th scope="col">日期</th>
+        <th scope="col">上班時間</th>
+        <th scope="col">下班時間</th>
+        <th scope="col">缺勤</th>
+        <th scope="col">出缺勤調整</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="attendance in attendances" :key="attendance.id">
-        <th>
+        <th scope="row">
           {{ attendance.id }}
         </th>
         <td>
@@ -29,6 +30,15 @@
         </td>
         <td>
           {{ attendance.absent ? '是' : '否' }}
+        </td>
+        <td>
+          <button
+            v-if="attendance.absent"
+            class="btn btn-danger btn-sm"
+            @click="putAbsence(attendance)"
+          >
+            清除缺勤
+          </button>
         </td>
       </tr>
     </tbody>
@@ -86,12 +96,32 @@ export default {
       return dayjs.tz(clockOut, 'Asia/Taipei').format('YYYY-MM-DD HH:mm:ss');
     }
 
+    async function putAbsence(attendance) {
+      try {
+        const { data } = await adminAPI.attendances.put(attendance.id);
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法更新出缺勤狀態！',
+        });
+      }
+    }
+
     fetchAttendances();
 
     return {
       attendances,
       formattedClockIn,
       formattedClockOut,
+      putAbsence,
     };
   },
 };

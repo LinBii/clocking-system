@@ -55,10 +55,7 @@
           </ul>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a
-                href="#"
-                class="btn btn-sm btn-outline-success text-white"
-                @click="logout"
+              <a href="#" class="btn btn-danger text-white" @click="logout"
                 >登出</a
               >
             </li>

@@ -1,16 +1,30 @@
 <template>
   <div class="container py-5">
-    <div v-if="isHoliday">今天放假，好好休息！</div>
-    <div v-if="!isHoliday">
-      <h1>歡迎來到PUNCHIN！</h1>
-      <p>現在時間： {{ currentTime }}</p>
-      <button v-if="!clockedIn" @click="clockIn">打卡上班</button>
-      <button v-else @click="clockOut">打卡下班</button>
-      {{ clockInTimeValue }}
-      {{ clockOutTimeValue }}
-      {{ dayChangeTime }}
-
-      <p v-if="!clockedIn">您今天還沒打卡！</p>
+    <div class="text-center">
+      <h1>歡迎來到PUNCHIN考勤系統</h1>
+      <h2>{{ currentTime }}</h2>
+      <div v-if="isHoliday" class="my-3">今天放假，好好休息！</div>
+      <div v-if="!isHoliday" class="my-3">
+        <button
+          v-if="!clockedIn"
+          @click="clockIn"
+          class="btn btn-outline-danger btn-circle"
+        >
+          <p class="mb-0">打卡上班</p>
+        </button>
+        <button
+          v-else
+          @click="clockOut"
+          class="btn btn-outline-success btn-circle"
+        >
+          <p class="mb-0">打卡下班</p>
+        </button>
+      </div>
+      <div>
+        <p v-if="clockInTimeValue">上班時間：{{ clockInTimeValue }}</p>
+        <p v-if="clockOutTimeValue">下班時間：{{ clockOutTimeValue }}</p>
+      </div>
+      <h2 v-if="!clockedIn">您今天還沒打卡！</h2>
     </div>
   </div>
 </template>
@@ -44,9 +58,6 @@ export default {
     const clockOutTime = ref(clockOutTimeValue);
     const dayChangeTime = ref(dayChangeTimeValue);
 
-    // Check if the absent message is logged
-    let messageLogged = false;
-
     // check if the user is clocked in
     const clockedIn = ref(clockedInCheck);
 
@@ -64,10 +75,18 @@ export default {
         .add(1, 'day')
         .format('YYYY-MM-DD 05:00:00');
 
-      // able the clock-out button, disable the clock-in button
-      clockedIn.value = true;
-      store.commit('setClockedIn', true);
-      localStorage.setItem('clockedIn', true);
+      const hour = dayjs().hour();
+
+      // When the clock in time is between 00:00 ~ 05:00, the date value would be considered as the day before
+      if (hour >= 0 && hour < 5) {
+        date.value = dayjs
+          .utc()
+          .local()
+          .subtract(1, 'day')
+          .format('YYYY-MM-DD 00:00:00');
+      } else {
+        date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+      }
 
       try {
         const { data } = await attendanceAPI.create({
@@ -88,12 +107,28 @@ export default {
         store.commit('setClockInTime', clockInTime.value);
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
-        console.log(data);
+
+        // Enable the clock-out button, disable the clock-in button
+        clockedIn.value = true;
+        store.commit('setClockedIn', true);
+        localStorage.setItem('clockedIn', true);
       } catch (error) {
-        Toast.fire({
-          icon: 'error',
-          title: error.message,
-        });
+        if (error.message === '今天已經打卡上班了！') {
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
+        }
+        if (error.message === 'Network Error') {
+          Toast.fire({
+            icon: 'warning',
+            title: '無法連線到伺服器！',
+          });
+        } else {
+          Toast.fire({
+            icon: 'error',
+            title: error.message,
+          });
+        }
       }
     }
 
@@ -118,8 +153,6 @@ export default {
         clockOutTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);
-
-        clockedIn.value = true;
       }
 
       try {
@@ -140,13 +173,22 @@ export default {
         localStorage.setItem('date', date.value);
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);
+
+        clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
       } catch (error) {
-        Toast.fire({
-          icon: 'error',
-          title: error.message,
-        });
+        if (error.message === 'Network Error') {
+          Toast.fire({
+            icon: 'warning',
+            title: '無法連線到伺服器！',
+          });
+        } else {
+          Toast.fire({
+            icon: 'error',
+            title: error.message,
+          });
+        }
       }
     }
 
@@ -154,17 +196,8 @@ export default {
     setInterval(() => {
       currentTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
-      if (
-        dayjs(currentTime.value).isAfter(dayChangeTime.value) &&
-        !messageLogged
-      ) {
-        // TODO: deal with absent
-        // if (absent.value === true && clockedIn.value === true) {
-        //   console.log('Notify the admin that this user is absent');
-        // }
-
+      if (dayjs(currentTime.value).isAfter(dayChangeTime.value)) {
         clockOutTime.value = '';
-
         clockedIn.value = false;
         store.commit('setClockedIn', false);
 
@@ -190,3 +223,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.btn-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 70px;
+  font-size: 5vh;
+  line-height: 1.33;
+}
+</style>

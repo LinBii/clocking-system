@@ -1,27 +1,29 @@
 <template>
-  <h2>GPS 打卡</h2>
-  <div v-if="isLoading">允許取得位置後，才能進行GPS打卡！</div>
-  <div v-else>
-    <button
-      v-if="!clockedIn"
-      :disabled="!withinRange || isHoliday"
-      @click="clockIn"
-      class="mt-3"
-    >
-      打卡上班
-    </button>
-    <button
-      v-else-if="clockedIn"
-      :disabled="!withinRange || isHoliday"
-      @click="clockOut"
-      class="mt-3"
-    >
-      打卡下班
-    </button>
-    <p>距離公司{{ distance }}公尺</p>
-    <p v-if="!withinRange">超出範圍，無法打卡！</p>
+  <div class="text-center">
+    <h2>GPS 打卡</h2>
+    <div v-if="isLoading">允許取得位置後，才能進行GPS打卡！</div>
+    <div v-else>
+      <button
+        v-if="!clockedIn"
+        :disabled="!withinRange || isHoliday"
+        @click="clockIn"
+        class="mt-3 btn btn-outline-danger btn-circle"
+      >
+        <p class="mb-0">打卡上班</p>
+      </button>
+      <button
+        v-else-if="clockedIn"
+        :disabled="!withinRange || isHoliday"
+        @click="clockOut"
+        class="mt-3 btn btn-outline-success btn-circle"
+      >
+        <p class="mb-0">打卡下班</p>
+      </button>
+      <p class="mt-3">距離公司{{ distance }}公尺</p>
+      <p v-if="!withinRange">超出範圍，無法打卡！</p>
+    </div>
+    <div id="map" ref="mapContainer"></div>
   </div>
-  <div id="map" ref="mapContainer"></div>
 </template>
 
 <script>
@@ -144,16 +146,24 @@ export default {
 
     async function clockIn() {
       clockInTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
-
       // date format in database is YYYY-MM-DD 00:00:00
       date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
-
       dayChangeTime.value = dayjs(date.value)
         .add(1, 'day')
         .format('YYYY-MM-DD 05:00:00');
 
-      // able the clock-out button, disable the clock-in button
-      clockedIn.value = true;
+      const hour = dayjs().hour();
+
+      // When the clock in time is between 00:00 ~ 05:00, the date value would be considered as the day before
+      if (hour >= 0 && hour < 5) {
+        date.value = dayjs
+          .utc()
+          .local()
+          .subtract(1, 'day')
+          .format('YYYY-MM-DD 00:00:00');
+      } else {
+        date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+      }
 
       try {
         const { data } = await attendanceAPI.create({
@@ -175,13 +185,28 @@ export default {
         store.commit('setClockInTime', clockInTime.value);
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
+
+        // Enable the clock-out button, disable the clock-in button
+        clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
       } catch (error) {
-        Toast.fire({
-          icon: 'error',
-          title: error.message,
-        });
+        if (error.message === '今天已經打卡上班了！') {
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
+        }
+        if (error.message === 'Network Error') {
+          Toast.fire({
+            icon: 'warning',
+            title: '無法連線到伺服器！',
+          });
+        } else {
+          Toast.fire({
+            icon: 'error',
+            title: error.message,
+          });
+        }
       }
     }
 
@@ -204,8 +229,6 @@ export default {
       // Set the clockOutTime ref to the current time, if it is later than the current value
       if (!clockOutTime.value || dayjs.utc().local() > clockOutTime.value) {
         clockOutTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
-
-        clockedIn.value = true;
       }
 
       try {
@@ -226,13 +249,22 @@ export default {
         localStorage.setItem('date', date.value);
         store.commit('setClockOutTime', clockOutTime.value);
         localStorage.setItem('clockOutTime', clockOutTime.value);
+
+        clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
       } catch (error) {
-        Toast.fire({
-          icon: 'error',
-          title: error.message,
-        });
+        if (error.message === 'Network Error') {
+          Toast.fire({
+            icon: 'warning',
+            title: '無法連線到伺服器！',
+          });
+        } else {
+          Toast.fire({
+            icon: 'error',
+            title: error.message,
+          });
+        }
       }
     }
 
@@ -253,5 +285,13 @@ export default {
 #map {
   height: 50vh;
   width: 50vh;
+  margin: auto;
+}
+.btn-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 70px;
+  font-size: 5vh;
+  line-height: 1.33;
 }
 </style>

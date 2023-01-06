@@ -2,11 +2,15 @@
   <main>
     <div class="container py-5">
       <h2 v-if="isHoliday">今天放假，好好休息！</h2>
-      <div v-else>
+      <div v-else class="text-center">
+        <h2>QR Code 打卡</h2>
+        <p>必須允許使用攝影機才能使用QR Code打卡！</p>
         <div v-if="currentUser.role === 'admin'">
           <a href="#/clocking/qrcode/generate">產生QR Code</a>
           | <a href="#/clocking/qrcode/read">讀取QR Code</a>
-          <component :is="currentView" />
+          <div>
+            <component :is="currentView" />
+          </div>
         </div>
       </div>
     </div>

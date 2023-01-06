@@ -29,8 +29,6 @@ passport.use(
               where: { id: user.id },
             });
           }
-
-          console.log(user.wrongPasswordTimes);
           return done(null, false, { message: '密碼錯誤！' });
         }
         return done(null, user);

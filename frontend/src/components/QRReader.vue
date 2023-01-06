@@ -1,5 +1,4 @@
 <template>
-  <p>必須允許使用攝影機才能使用QR Code打卡！</p>
   <p>{{ errorText }}</p>
   <div class="stream">
     <qr-stream @init="onInit" @decode="onDecode"> </qr-stream>
@@ -47,18 +46,26 @@ export default {
       state.data = data;
       const object = JSON.parse(atob(decodeURIComponent(data)));
 
-      // if first scan -> clock-in
+      // if first scan and first clock-in -> clock-in
       if (!state.hasScanned && clockedIn.value === false) {
         try {
           clockInTime.value = dayjs.utc().local();
-
           dayChangeTime.value = dayjs(object.date)
             .add(1, 'day')
             .format('YYYY-MM-DD 05:00:00');
 
-          clockedIn.value = true;
-          store.commit('setClockedIn', true);
-          localStorage.setItem('clockedIn', true);
+          const hour = dayjs().hour();
+
+          // When the clock in time is between 00:00 ~ 05:00, the date value would be considered as the day before
+          if (hour >= 0 && hour < 5) {
+            object.date = dayjs
+              .utc()
+              .local()
+              .subtract(1, 'day')
+              .format('YYYY-MM-DD 00:00:00');
+          } else {
+            object.date = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+          }
 
           const { data } = await attendanceAPI.create({
             userId,
@@ -78,26 +85,49 @@ export default {
           // Store dayChangeTime
           localStorage.setItem('dayChangeTime', dayChangeTime.value);
 
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
+
           state.hasScanned = true;
         } catch (error) {
-          Toast.fire({
-            icon: 'error',
-            title: error.message,
-          });
+          if (error.message === '今天已經打卡上班了！') {
+            clockedIn.value = true;
+            store.commit('setClockedIn', true);
+            localStorage.setItem('clockedIn', true);
+          }
+          if (error.message === 'Network Error') {
+            Toast.fire({
+              icon: 'warning',
+              title: '無法連線到伺服器！',
+            });
+          } else {
+            Toast.fire({
+              icon: 'error',
+              title: error.message,
+            });
+          }
         }
         // clock-out
       } else {
         clockOutTime.value = dayjs.utc().local();
 
+        const hour = dayjs().hour();
+
+        // When the clock out time is between 00:00 ~ 05:00, the date value would be considered as the day before
+        if (hour >= 0 && hour < 5) {
+          object.date = dayjs
+            .utc()
+            .local()
+            .subtract(1, 'day')
+            .format('YYYY-MM-DD 00:00:00');
+        } else {
+          object.date = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+        }
+
         // Set the clockOutTime ref to the current time, if it is later than the current value
         if (!clockOutTime.value || dayjs.utc().local() > clockOutTime.value) {
           clockOutTime.value = dayjs.utc().local();
-          store.commit('setClockOutTime', clockOutTime.value);
-          localStorage.setItem('clockOutTime', clockOutTime.value);
-
-          clockedIn.value = true;
-          store.commit('setClockedIn', true);
-          localStorage.setItem('clockedIn', true);
         }
 
         try {
@@ -116,11 +146,22 @@ export default {
           }
           store.commit('setClockOutTime', clockOutTime.value);
           localStorage.setItem('clockOutTime', clockOutTime.value);
+
+          clockedIn.value = true;
+          store.commit('setClockedIn', true);
+          localStorage.setItem('clockedIn', true);
         } catch (error) {
-          Toast.fire({
-            icon: 'error',
-            title: error.message,
-          });
+          if (error.message === 'Network Error') {
+            Toast.fire({
+              icon: 'warning',
+              title: '無法連線到伺服器！',
+            });
+          } else {
+            Toast.fire({
+              icon: 'error',
+              title: error.message,
+            });
+          }
         }
       }
     }
@@ -129,9 +170,7 @@ export default {
       try {
         const { capabilities } = await promise;
         // successfully initialized
-        console.log(capabilities);
       } catch (error) {
-        console.log(error);
         if (error.name === 'NotAllowedError') {
           errorText.value = '請允許使用攝影機功能！';
         } else if (error.name === 'NotFoundError') {

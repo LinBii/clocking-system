@@ -9,8 +9,6 @@
           <th scope="col">名字</th>
           <th scope="col">Email</th>
           <th scope="col">權限角色</th>
-          <th scope="col">是否上鎖</th>
-          <th scope="col">解鎖</th>
         </tr>
       </thead>
       <tbody>
@@ -26,14 +24,6 @@
           </td>
           <td>
             {{ user.role }}
-          </td>
-          <td>
-            {{ user.isLocked ? '是' : '否' }}
-          </td>
-          <td>
-            <button v-if="user.isLocked" class="btn btn-danger btn-sm">
-              解鎖
-            </button>
           </td>
         </tr>
       </tbody>
@@ -65,7 +55,7 @@ export default {
 
     async function fetchUsers() {
       try {
-        const { data } = await adminAPI.users.get();
+        const { data } = await adminAPI.absentUsers.get();
 
         if (data.status === 'error') {
           throw new Error(data.message);
@@ -89,3 +79,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.button {
+  display: inline-block;
+  height: 24px;
+}
+</style>
