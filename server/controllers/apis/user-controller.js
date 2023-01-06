@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Attendance } = require('../../models');
+const { sendIsLockedEmail } = require('../../email/isLockedEmail');
 
 const userController = {
   signUp: (req, res, next) => {
@@ -65,6 +66,7 @@ const userController = {
               },
             }
           );
+          await sendIsLockedEmail(user);
           return res.status(401).json({
             status: 'error',
             message: '因為密碼錯誤已達五次，帳號已被鎖定！',

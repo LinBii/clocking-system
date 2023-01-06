@@ -65,5 +65,6 @@ async function sendAbsentUserEmail() {
 }
 
 module.exports = {
+  getAdminEmails,
   sendAbsentUserEmail,
 };
