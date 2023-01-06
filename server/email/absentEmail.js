@@ -1,13 +1,15 @@
-const schedule = require('node-schedule');
+const dayjs = require('dayjs');
 const { User, Attendance } = require('../models');
 const { sendEmail } = require('./nodemailer');
 
-async function getAbsentUsers(req, res, next) {
+let date = dayjs().subtract(1, 'day').format('YYYY-MM-DD 00:00:00');
+
+async function getTodayAbsentUsers(req, res, next) {
   const users = await User.findAll({
     include: [
       {
         model: Attendance,
-        where: { absent: true },
+        where: { date: date, absent: true },
       },
     ],
   });
@@ -30,14 +32,6 @@ async function getAdminEmails(req, res, next) {
 
 async function sendAbsentUserEmail() {
   try {
-    const absentUsers = await getAbsentUsers();
-
-    let mailText = '缺勤的名單如下： \n';
-
-    for (absentUser of absentUsers) {
-      mailText += `id： ${absentUser.id} | 名字： ${absentUser.name} | Email： ${absentUser.email}\n`;
-    }
-
     // get admin mailList
     let mailList = [process.env.AUTH_EMAIL];
 
@@ -46,7 +40,25 @@ async function sendAbsentUserEmail() {
       mailList.push(adminEmail.email);
     }
 
-    sendEmail(mailList, mailText);
+    date = dayjs(date).format('YYYY-MM-DD');
+
+    const mailSubject = `${date}缺勤名單通知`;
+
+    const absentUsers = await getTodayAbsentUsers();
+
+    let mailText = '';
+
+    if (absentUsers.length === 0) {
+      mailText = `${date}沒有人缺勤！`;
+    } else {
+      mailText = `${date}的缺勤名單如下： \n`;
+
+      for (absentUser of absentUsers) {
+        mailText += `ID： ${absentUser.id} | 名字： ${absentUser.name} | 信箱： ${absentUser.email}\n`;
+      }
+    }
+
+    sendEmail(mailList, mailSubject, mailText);
   } catch (error) {
     console.error(error);
   }
