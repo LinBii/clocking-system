@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const sendEmail = (mailList, mailText) => {
+const sendEmail = (mailList, mailSubject, mailText) => {
   return new Promise((resolve, reject) => {
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
@@ -14,7 +14,7 @@ const sendEmail = (mailList, mailText) => {
       from: process.env.AUTH_EMAIL,
       // send to admin
       to: mailList,
-      subject: '今日缺勤名單',
+      subject: mailSubject,
       text: mailText,
     };
 
