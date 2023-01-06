@@ -55,7 +55,7 @@
           </ul>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a href="#" class="btn btn-danger text-white" @click="logout"
+              <a class="btn btn-outline-danger text-white" @click="logout"
                 >登出</a
               >
             </li>
@@ -92,3 +92,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.navbar-dark {
+  color: #1d1d1d;
+}
+</style>

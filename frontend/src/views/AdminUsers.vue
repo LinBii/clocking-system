@@ -9,7 +9,7 @@
           <th scope="col">名字</th>
           <th scope="col">Email</th>
           <th scope="col">權限角色</th>
-          <th scope="col">是否上鎖</th>
+          <th scope="col">上鎖</th>
           <th scope="col">解鎖</th>
         </tr>
       </thead>
@@ -89,3 +89,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.container {
+  width: 80vh;
+}
+</style>

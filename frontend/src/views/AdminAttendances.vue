@@ -19,3 +19,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.container {
+  width: 80vh;
+}
+</style>

@@ -1,7 +1,11 @@
 <template>
   <div class="container py-5">
-    <h2 v-if="isHoliday">今天放假，好好休息！</h2>
-    <div v-else><GPSMap /></div>
+    <div v-if="isHoliday">
+      <h1>今天放假，好好休息！</h1>
+    </div>
+    <div v-else>
+      <GPSMap />
+    </div>
   </div>
 </template>
 

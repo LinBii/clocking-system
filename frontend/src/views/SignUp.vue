@@ -2,18 +2,17 @@
   <div class="container py-5">
     <form class="w-100" @submit.prevent="handleSubmit">
       <div class="text-center mb-4">
-        <h1 class="h3 mb-3 font-weight-normal">Sign Up</h1>
+        <h1 class="h3 mb-3 fw-bold">註冊</h1>
       </div>
 
       <div class="mb-2">
-        <label for="name">Name</label>
+        <label for="name">姓名</label>
         <input
           id="name"
           v-model="name"
           name="name"
           type="text"
           class="form-control"
-          placeholder="name"
           autocomplete="username"
           required
           autofocus
@@ -28,51 +27,53 @@
           name="email"
           type="email"
           class="form-control"
-          placeholder="email"
           autocomplete="email"
           required
         />
       </div>
 
       <div class="mb-3">
-        <label for="password">Password</label>
+        <label for="password">密碼</label>
         <input
           id="password"
           v-model="password"
           name="password"
           type="password"
           class="form-control"
-          placeholder="Password"
           autocomplete="new-password"
           required
         />
       </div>
 
       <div class="mb-3">
-        <label for="password-check">Password Check</label>
+        <label for="password-check">確認密碼</label>
         <input
           id="password-check"
           v-model="passwordCheck"
           name="passwordCheck"
           type="password"
           class="form-control"
-          placeholder="Password"
           autocomplete="new-password"
           required
         />
       </div>
 
-      <button class="btn btn-primary btn-block mb-3" type="submit">
-        Submit
-      </button>
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary btn-block my-3" type="submit">
+          註冊
+        </button>
+      </div>
 
       <div class="text-center mb-3">
         <p>
-          <router-link to="/signin"> Sign In </router-link>
+          已有帳號？
+          <router-link to="/signin" class="text-decoration-none">
+            登入
+          </router-link>
         </p>
       </div>
 
-      <p class="mt-5 mb-3 text-muted text-center">&copy; 2022-</p>
+      <p class="mt-5 mb-3 text-muted text-center">&copy; 2023-</p>
     </form>
   </div>
 </template>
@@ -140,3 +141,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.container {
+  width: 50vh;
+}
+</style>

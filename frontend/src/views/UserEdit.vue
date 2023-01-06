@@ -1,11 +1,11 @@
 <template>
   <div class="container py-5">
     <form @submit.prevent.stop="handleSubmit">
-      <div class="text-center mb-4">
-        <h1 class="h3 mb-3 font-weight-normal">修改密碼</h1>
+      <div class="text-center">
+        <h1 class="fw-bold">修改密碼</h1>
       </div>
 
-      <div class="mb-3 col-xs-4">
+      <div class="my-3 col-xs-4">
         <label for="new-password">新密碼</label>
         <input
           id="new-password"
@@ -13,12 +13,11 @@
           name="newPassword"
           type="password"
           class="form-control"
-          placeholder="新密碼"
           autocomplete="new-password"
         />
       </div>
 
-      <div class="mb-3">
+      <div class="my-3">
         <label for="password-check">確認新密碼</label>
         <input
           id="password-check"
@@ -26,12 +25,11 @@
           name="passwordCheck"
           type="password"
           class="form-control"
-          placeholder="確認新密碼"
           autocomplete="new-password"
         />
       </div>
-      <div class="text-center mt-4">
-        <button type="submit" class="btn btn-primary btn-lg">提交</button>
+      <div class="text-center my-4 d-grid gap-2">
+        <button type="submit" class="btn btn-primary btn-lg">修改密碼</button>
       </div>
     </form>
   </div>
@@ -114,3 +112,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.container {
+  width: 50vh;
+}
+</style>

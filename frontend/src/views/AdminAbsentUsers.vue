@@ -13,16 +13,16 @@
       </thead>
       <tbody>
         <tr v-for="user in users" :key="user.id">
-          <th scope="row">
+          <th scope="row" class="id">
             {{ user.id }}
           </th>
-          <td>
+          <td class="name">
             {{ user.name }}
           </td>
-          <td>
+          <td class="email">
             {{ user.email }}
           </td>
-          <td>
+          <td class="role">
             {{ user.role }}
           </td>
         </tr>
@@ -84,5 +84,18 @@ export default {
 .button {
   display: inline-block;
   height: 24px;
+}
+.id {
+  width: 5vh;
+}
+.name,
+.role {
+  width: 10vh;
+}
+.email {
+  width: 15vh;
+}
+.container {
+  width: 80vh;
 }
 </style>
