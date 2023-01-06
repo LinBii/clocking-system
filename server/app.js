@@ -8,10 +8,10 @@ const { sendAbsentUserEmail } = require('./email/emailScheduler');
 const app = express();
 const port = process.env.PORT || 3000;
 
-schedule.scheduleJob('0 5 * * *', function () {
+schedule.scheduleJob('00 5 * * *', function () {
   console.log('Send the mail at ' + new Date());
+  sendAbsentUserEmail();
 });
-sendAbsentUserEmail();
 
 app.use(cors());
 
