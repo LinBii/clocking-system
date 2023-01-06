@@ -8,17 +8,21 @@
         <button
           v-if="!clockedIn"
           @click="clockIn"
-          class="btn btn-primary btn-circle"
+          class="btn btn-outline-danger btn-circle"
         >
-          打卡上班
+          <p class="mb-0">打卡上班</p>
         </button>
-        <button v-else @click="clockOut" class="btn btn-primary btn-circle">
-          打卡下班
+        <button
+          v-else
+          @click="clockOut"
+          class="btn btn-outline-success btn-circle"
+        >
+          <p class="mb-0">打卡下班</p>
         </button>
       </div>
       <div>
-        <p>上班時間：{{ clockInTimeValue }}</p>
-        <p>下班時間：{{ clockOutTimeValue }}</p>
+        <p v-if="clockInTimeValue">上班時間：{{ clockInTimeValue }}</p>
+        <p v-if="clockOutTimeValue">下班時間：{{ clockOutTimeValue }}</p>
       </div>
       <h2 v-if="!clockedIn">您今天還沒打卡！</h2>
     </div>
@@ -71,6 +75,19 @@ export default {
         .add(1, 'day')
         .format('YYYY-MM-DD 05:00:00');
 
+      const hour = dayjs().hour();
+
+      // When the clock in time is between 00:00 ~ 05:00, the date value would be considered as the day before
+      if (hour >= 0 && hour < 5) {
+        date.value = dayjs
+          .utc()
+          .local()
+          .subtract(1, 'day')
+          .format('YYYY-MM-DD 00:00:00');
+      } else {
+        date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+      }
+
       try {
         const { data } = await attendanceAPI.create({
           userId: store.getters.userId,
@@ -91,7 +108,7 @@ export default {
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
 
-        // able the clock-out button, disable the clock-in button
+        // Enable the clock-out button, disable the clock-in button
         clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
@@ -211,9 +228,8 @@ export default {
 .btn-circle {
   width: 140px;
   height: 140px;
-  padding: 20px 32px;
   border-radius: 70px;
-  font-size: 36px;
+  font-size: 5vh;
   line-height: 1.33;
 }
 </style>

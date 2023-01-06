@@ -7,17 +7,17 @@
         v-if="!clockedIn"
         :disabled="!withinRange || isHoliday"
         @click="clockIn"
-        class="mt-3 btn btn-primary btn-circle"
+        class="mt-3 btn btn-outline-danger btn-circle"
       >
-        打卡上班
+        <p class="mb-0">打卡上班</p>
       </button>
       <button
         v-else-if="clockedIn"
         :disabled="!withinRange || isHoliday"
         @click="clockOut"
-        class="mt-3 btn btn-primary btn-circle"
+        class="mt-3 btn btn-outline-success btn-circle"
       >
-        打卡下班
+        <p class="mb-0">打卡下班</p>
       </button>
       <p class="mt-3">距離公司{{ distance }}公尺</p>
       <p v-if="!withinRange">超出範圍，無法打卡！</p>
@@ -152,6 +152,19 @@ export default {
         .add(1, 'day')
         .format('YYYY-MM-DD 05:00:00');
 
+      const hour = dayjs().hour();
+
+      // When the clock in time is between 00:00 ~ 05:00, the date value would be considered as the day before
+      if (hour >= 0 && hour < 5) {
+        date.value = dayjs
+          .utc()
+          .local()
+          .subtract(1, 'day')
+          .format('YYYY-MM-DD 00:00:00');
+      } else {
+        date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+      }
+
       try {
         const { data } = await attendanceAPI.create({
           userId: store.getters.userId,
@@ -173,7 +186,7 @@ export default {
         localStorage.setItem('clockInTime', clockInTime.value);
         localStorage.setItem('dayChangeTime', dayChangeTime.value);
 
-        // able the clock-out button, disable the clock-in button
+        // Enable the clock-out button, disable the clock-in button
         clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
@@ -277,9 +290,8 @@ export default {
 .btn-circle {
   width: 140px;
   height: 140px;
-  padding: 20px 32px;
   border-radius: 70px;
-  font-size: 36px;
+  font-size: 5vh;
   line-height: 1.33;
 }
 </style>

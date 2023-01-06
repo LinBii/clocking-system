@@ -54,6 +54,19 @@ export default {
             .add(1, 'day')
             .format('YYYY-MM-DD 05:00:00');
 
+          const hour = dayjs().hour();
+
+          // When the clock in time is between 00:00 ~ 05:00, the date value would be considered as the day before
+          if (hour >= 0 && hour < 5) {
+            object.date = dayjs
+              .utc()
+              .local()
+              .subtract(1, 'day')
+              .format('YYYY-MM-DD 00:00:00');
+          } else {
+            object.date = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+          }
+
           const { data } = await attendanceAPI.create({
             userId,
             date: object.date,
