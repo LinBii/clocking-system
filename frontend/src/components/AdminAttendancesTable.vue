@@ -126,23 +126,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.id {
-  width: 5vh;
-}
-.name,
-.date,
-.absent {
-  width: 10vh;
-}
-.time {
-  width: 15vh;
-}
-.put-absent {
-  width: 20vh;
-}
-.table {
-  width: 80vh;
-}
-</style>

@@ -129,6 +129,6 @@ export default {
 
 <style scoped>
 .container {
-  width: 50vh;
+  width: 80vw;
 }
 </style>

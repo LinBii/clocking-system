@@ -235,4 +235,7 @@ export default {
 .loading {
   color: #fff;
 }
+.container {
+  width: 80vw;
+}
 </style>

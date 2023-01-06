@@ -97,4 +97,7 @@ export default {
 .navbar-dark {
   color: #1d1d1d;
 }
+.navbar {
+  width: 100%;
+}
 </style>
