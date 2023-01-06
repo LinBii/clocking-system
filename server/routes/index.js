@@ -22,6 +22,7 @@ const authenticatedAdmin = (req, res, next) => {
 };
 
 const { apiErrorHandler } = require('../middleware/error-handler');
+const { sendEmail } = require('../email/nodemailer.js');
 
 router.get('/get_current_user', authenticated, userController.getCurrentUser);
 
@@ -63,6 +64,12 @@ router.get(
   authenticatedAdmin,
   adminController.getAbsentUsers
 );
+
+router.get('/email', (req, res) => {
+  sendEmail()
+    .then((response) => res.send(response.message))
+    .catch((error) => res.status(500).send(error.message));
+});
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
