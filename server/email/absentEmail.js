@@ -9,8 +9,6 @@ let date = dayjs()
   .subtract(1, 'day')
   .format('YYYY-MM-DD 00:00:00');
 
-console.log(date);
-
 async function getTodayAbsentUsers(req, res, next) {
   const users = await User.findAll({
     include: [
