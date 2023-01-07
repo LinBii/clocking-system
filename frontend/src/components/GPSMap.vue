@@ -21,8 +21,11 @@
       >
         <p class="mb-0">打卡下班</p>
       </button>
-      <p class="my-3">距離公司{{ distance }}公尺</p>
-      <p v-if="!withinRange" class="my-3">超出範圍，無法打卡！</p>
+      <div class="my-3 fw-bold">
+        距離公司 {{ distance }} 公尺，
+        <p v-if="withinRange">在範圍內，可以打卡！</p>
+        <p v-else>超出範圍，無法打卡！</p>
+      </div>
     </div>
     <div id="map" ref="mapContainer"></div>
   </div>
