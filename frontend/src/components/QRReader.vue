@@ -1,7 +1,8 @@
 <template>
   <p>{{ errorText }}</p>
   <div class="stream">
-    <qr-stream @init="onInit" @decode="onDecode"> </qr-stream>
+    <h2 v-if="isProcessing" class="fw-bold mt-5">讀取中...</h2>
+    <qrcode-stream @init="onInit" @decode="onDecode"> </qrcode-stream>
   </div>
   <br />
 </template>
@@ -9,7 +10,7 @@
 <script>
 import { ref, reactive } from 'vue';
 import { useStore } from 'vuex';
-import { QrStream } from 'vue3-qr-reader';
+import { QrcodeStream } from 'vue-qrcode-reader';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -19,9 +20,11 @@ dayjs.extend(utc, timezone);
 
 export default {
   components: {
-    QrStream,
+    QrcodeStream,
   },
   setup() {
+    const isProcessing = ref(false);
+
     const store = useStore();
 
     const clockedInValue = localStorage.getItem('clockedIn');
@@ -49,6 +52,8 @@ export default {
       // if first scan and first clock-in -> clock-in
       if (!state.hasScanned && clockedIn.value === false) {
         try {
+          isProcessing.value = true;
+
           clockInTime.value = dayjs.utc().local();
           dayChangeTime.value = dayjs(object.date)
             .add(1, 'day')
@@ -90,6 +95,8 @@ export default {
           localStorage.setItem('clockedIn', true);
 
           state.hasScanned = true;
+
+          isProcessing.value = false;
         } catch (error) {
           if (error.message === '今天已經打卡上班了！') {
             clockedIn.value = true;
@@ -107,9 +114,12 @@ export default {
               title: error.message,
             });
           }
+          isProcessing.value = false;
         }
         // clock-out
       } else {
+        isProcessing.value = true;
+
         clockOutTime.value = dayjs.utc().local();
 
         const hour = dayjs().hour();
@@ -150,6 +160,8 @@ export default {
           clockedIn.value = true;
           store.commit('setClockedIn', true);
           localStorage.setItem('clockedIn', true);
+
+          isProcessing.value = false;
         } catch (error) {
           if (error.message === 'Network Error') {
             Toast.fire({
@@ -163,12 +175,13 @@ export default {
             });
           }
         }
+        isProcessing.value = false;
       }
     }
 
     async function onInit(promise) {
       try {
-        const { capabilities } = await promise;
+        await promise;
         // successfully initialized
       } catch (error) {
         if (error.name === 'NotAllowedError') {
@@ -178,19 +191,21 @@ export default {
         } else if (error.name === 'NotSupportedError') {
           errorText.value = 'page is not served over HTTPS (or localhost)';
         } else if (error.name === 'NotReadableError') {
-          errorText.value = 'maybe camera is already in use';
+          errorText.value = '攝影機可能正被占用！';
         } else if (error.name === 'OverconstrainedError') {
           errorText.value =
             'did you requested the front camera although there is none?';
         } else if (error.name === 'StreamApiNotSupportedError') {
           errorText.value = 'browser seems to be lacking features';
+        } else {
+          errorText.value = `ERROR: Camera error (${error.name})`;
         }
       } finally {
         // hide loading indicator
       }
     }
 
-    return { onDecode, onInit, errorText };
+    return { onDecode, onInit, errorText, isProcessing };
   },
 };
 </script>
