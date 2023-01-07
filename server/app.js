@@ -8,7 +8,7 @@ const { sendAbsentUserEmail } = require('./email/absentEmail');
 const app = express();
 const port = process.env.PORT || 3000;
 
-schedule.scheduleJob('00 5 * * *', function () {
+schedule.scheduleJob('15 9 * * *', function () {
   console.log('Send the mail at ' + new Date());
   sendAbsentUserEmail();
 });
