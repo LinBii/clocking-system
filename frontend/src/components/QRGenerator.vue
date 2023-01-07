@@ -1,11 +1,11 @@
 <template>
   <div class="qrcode py-5">
-    <qrcode-vue :value="value" :size="size"></qrcode-vue>
+    <qrcode-vue :value="qrCodeValue" :size="size"></qrcode-vue>
   </div>
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { ref, computed } from 'vue';
 import QrcodeVue from 'qrcode.vue';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -17,30 +17,32 @@ export default {
     QrcodeVue,
   },
   setup() {
-    const dateValue = localStorage.getItem('date');
+    const date = ref(getDateFromLocalStorage());
 
-    const date = ref(dateValue);
-    let data = reactive({
-      date: null,
+    const qrCodeValue = computed(() => {
+      const data = {
+        date: date.value,
+      };
+      const encodedString = btoa(JSON.stringify(data));
+      return encodeURIComponent(encodedString);
     });
 
-    let value = ref('hr:defaultdata.random');
-    let size = ref(250);
+    const size = ref(250);
 
-    date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
-    localStorage.setItem('date', date.value);
-
-    data = {
-      date: date.value,
-    };
-
-    const encodedString = btoa(JSON.stringify(data));
-    const urlEncodedString = encodeURIComponent(encodedString);
-
-    value.value = urlEncodedString;
-    return { value, size };
+    return { qrCodeValue, size };
   },
 };
+
+function getDateFromLocalStorage() {
+  const dateString = localStorage.getItem('date');
+  if (dateString) {
+    return dateString;
+  }
+
+  const date = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+  localStorage.setItem('date', date);
+  return date;
+}
 </script>
 
 <style scoped>
