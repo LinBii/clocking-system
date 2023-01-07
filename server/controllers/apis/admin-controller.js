@@ -63,6 +63,15 @@ const adminController = {
       next(err);
     }
   },
+  unlockUser: async (req, res, next) => {
+    try {
+      const user = await User.findByPk(req.params.id);
+      await user.update({ isLocked: false, wrongPasswordTimes: 0 });
+      return res.json({ status: 'success', message: '使用者解鎖成功！' });
+    } catch (err) {
+      next(err);
+    }
+  },
 };
 
 module.exports = adminController;

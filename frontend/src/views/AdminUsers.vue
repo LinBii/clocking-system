@@ -31,7 +31,11 @@
               {{ user.isLocked ? '是' : '否' }}
             </td>
             <td>
-              <button v-if="user.isLocked" class="btn btn-danger btn-sm">
+              <button
+                v-if="user.isLocked"
+                class="btn btn-danger btn-sm"
+                @click="unlock(user)"
+              >
                 解鎖
               </button>
             </td>
@@ -81,11 +85,31 @@ export default {
       }
     }
 
+    async function unlock(user) {
+      try {
+        const { data } = await adminAPI.users.unlock(user.id);
+        if (data.status === 'error') {
+          throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法更新出缺勤狀態！',
+        });
+      }
+    }
+
     fetchUsers();
     return {
       users,
       currentUser,
       isAuthenticated,
+      unlock,
     };
   },
 };

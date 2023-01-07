@@ -89,6 +89,11 @@ export default {
 
         if (data.status === 'error') {
           throw new Error(data.message);
+        } else if (data.status === 'success') {
+          Toast.fire({
+            icon: 'success',
+            title: data.message,
+          });
         }
 
         router.push({ name: 'clocking' });

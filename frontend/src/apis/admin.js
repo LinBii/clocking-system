@@ -25,6 +25,15 @@ export default {
         headers: { Authorization: `Bearer ${getToken()}` },
       });
     },
+    unlock(userId) {
+      return apiHelper.put(
+        `/admin/users/${userId}`,
+        { userId },
+        {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }
+      );
+    },
   },
   absentUsers: {
     get() {
