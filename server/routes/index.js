@@ -64,6 +64,12 @@ router.get(
   authenticatedAdmin,
   adminController.getAbsentUsers
 );
+router.put(
+  '/admin/users/:id',
+  authenticated,
+  authenticatedAdmin,
+  adminController.unlockUser
+);
 
 router.get('/email', (req, res) => {
   sendEmail()
