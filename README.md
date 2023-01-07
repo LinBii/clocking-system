@@ -34,11 +34,6 @@ PUNCHIN 乓去映 是一個使用 Vue 3、Node.js 及 MySQL 打造出的考勤�
 - 管理者可以將缺勤記錄改為出勤。
 - 在換日時間（GMT+8 05:00）之後，管理者會收到缺勤的使用者名單信件。
 - 使用者帳號上鎖時，管理者會收到信件通知。
-
-## 正在開發中的功能
-
-後台相關
-
 - 管理者可以解鎖使用者的帳號。
 
 # 專案安裝步驟
@@ -153,7 +148,7 @@ PUNCHIN 乓去映 是一個使用 Vue 3、Node.js 及 MySQL 打造出的考勤�
 - vuex 4.0.0
 - vite 4.0.3
 - qrcode.vue 3.3.3
-- vue3-qr-reader 1.0.0
+- vue-qrcode-reader 3.1.0-vue3-compatibility.2
 - leaflet 1.9.3
 - bootstrap 5.1.3
 - sweetalert2 11.6.16
