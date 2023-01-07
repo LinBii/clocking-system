@@ -5,6 +5,8 @@ const upload = multer();
 
 const passport = require('../config/passport.js');
 
+const { apiErrorHandler } = require('../middleware/error-handler');
+
 const attendanceController = require('../controllers/apis/attendance-controller');
 const userController = require('../controllers/apis/user-controller');
 const adminController = require('../controllers/apis/admin-controller');
@@ -21,23 +23,19 @@ const authenticatedAdmin = (req, res, next) => {
   }
 };
 
-const { apiErrorHandler } = require('../middleware/error-handler');
-const { sendEmail } = require('../email/nodemailer.js');
-
 router.get('/get_current_user', authenticated, userController.getCurrentUser);
+router.put(
+  '/users/:id',
+  authenticated,
+  upload.array(),
+  userController.updatePassword
+);
 
 router.post('/attendances', authenticated, attendanceController.postAttendance);
 router.put(
   '/attendances/:id',
   authenticated,
   attendanceController.updateAttendance
-);
-
-router.put(
-  '/users/:id',
-  authenticated,
-  upload.array(),
-  userController.updatePassword
 );
 
 router.get(
@@ -52,6 +50,7 @@ router.put(
   authenticatedAdmin,
   adminController.putAbsence
 );
+
 router.get(
   '/admin/users',
   authenticated,
@@ -70,12 +69,6 @@ router.put(
   authenticatedAdmin,
   adminController.unlockUser
 );
-
-router.get('/email', (req, res) => {
-  sendEmail()
-    .then((response) => res.send(response.message))
-    .catch((error) => res.status(500).send(error.message));
-});
 
 router.post('/signin', userController.signIn);
 router.post('/signup', userController.signUp);
