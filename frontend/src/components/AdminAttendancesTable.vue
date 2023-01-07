@@ -13,29 +13,30 @@
     </thead>
     <tbody>
       <tr v-for="attendance in attendances" :key="attendance.id">
-        <th scope="row" class="id">
+        <th scope="row">
           {{ attendance.id }}
         </th>
-        <td class="name">
+        <td>
           {{ attendance.User.name }}
         </td>
-        <td class="date">
+        <td>
           {{ attendance.date }}
         </td>
-        <td class="time">
+        <td>
           {{ attendance.clockIn }}
         </td>
-        <td class="time">
+        <td>
           {{ attendance.clockOut }}
         </td>
-        <td class="absent">
+        <td>
           {{ attendance.absent ? '是' : '否' }}
         </td>
-        <td class="put-absent">
+        <td>
           <button
             v-if="attendance.absent"
             class="btn btn-danger btn-sm"
             @click="putAbsence(attendance)"
+            :disabled="isProcessing"
           >
             清除缺勤
           </button>
@@ -57,6 +58,8 @@ dayjs.extend(utc, timezone);
 
 export default {
   setup() {
+    const isProcessing = ref(false);
+
     const attendances = ref([]);
 
     async function fetchAttendances() {
@@ -98,6 +101,8 @@ export default {
 
     async function putAbsence(attendance) {
       try {
+        isProcessing.value = true;
+
         const { data } = await adminAPI.attendances.put(attendance.id);
         if (data.status === 'error') {
           throw new Error(data.message);
@@ -107,11 +112,13 @@ export default {
             title: data.message,
           });
         }
+        isProcessing.value = false;
       } catch (error) {
         Toast.fire({
           icon: 'error',
-          title: '無法更新出缺勤狀態！',
+          title: error.response.data.message,
         });
+        isProcessing.value = false;
       }
     }
 
@@ -122,6 +129,7 @@ export default {
       formattedClockIn,
       formattedClockOut,
       putAbsence,
+      isProcessing,
     };
   },
 };

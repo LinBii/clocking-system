@@ -3,8 +3,8 @@ import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
 import calendar from './../data/calendar.json';
 
-// const baseURL = 'https://punchin-serv.herokuapp.com';
-const baseURL = 'http://localhost:3000';
+const baseURL = 'https://punchin-serv.herokuapp.com';
+// const baseURL = 'http://localhost:3000';
 
 export const apiHelper = axios.create({
   baseURL,

@@ -8,18 +8,24 @@
           v-if="!clockedIn"
           @click="clockIn"
           class="btn btn-danger btn-circle"
+          :disable="isProcessing"
         >
           <p class="mb-0">打卡上班</p>
         </button>
-        <button v-else @click="clockOut" class="btn btn-success btn-circle">
+        <button
+          v-else
+          @click="clockOut"
+          class="btn btn-success btn-circle"
+          :disabled="isProcessing"
+        >
           <p class="mb-0">打卡下班</p>
         </button>
       </div>
       <h2 v-if="isLoading" class="loading my-3">Is loading</h2>
       <h2 v-else class="my-3">{{ currentTime }}</h2>
       <div class="my-3">
-        <p v-if="clockInTimeValue">上班時間：{{ clockInTimeValue }}</p>
-        <p v-if="clockOutTimeValue">下班時間：{{ clockOutTimeValue }}</p>
+        <p v-if="clockInTime">上班時間：{{ clockInTime }}</p>
+        <p v-if="clockOutTime">下班時間：{{ clockOutTime }}</p>
       </div>
     </div>
   </div>
@@ -49,6 +55,7 @@ export default {
     const clockedInCheck = storeCheck(clockedInValue, store.state.clockedIn);
 
     const isLoading = ref(true);
+    const isProcessing = ref(false);
     const currentTime = ref('');
     const date = ref(dateValue);
     const clockInTime = ref(clockInTimeValue);
@@ -63,6 +70,8 @@ export default {
     localStorage.setItem('date', date.value);
 
     async function clockIn() {
+      isProcessing.value = true;
+
       clockInTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
       // date format in database is YYYY-MM-DD 00:00:00
@@ -109,8 +118,11 @@ export default {
         clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
+
+        isProcessing.value = false;
       } catch (error) {
         if (error.message === '今天已經打卡上班了！') {
+          clockInTime.value = '';
           clockedIn.value = true;
           store.commit('setClockedIn', true);
           localStorage.setItem('clockedIn', true);
@@ -126,10 +138,13 @@ export default {
             title: error.message,
           });
         }
+        isProcessing.value = false;
       }
     }
 
     async function clockOut() {
+      isProcessing.value = true;
+
       clockOutTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
       const hour = dayjs().hour();
@@ -174,6 +189,8 @@ export default {
         clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
+
+        isProcessing.value = false;
       } catch (error) {
         if (error.message === 'Network Error') {
           Toast.fire({
@@ -213,12 +230,15 @@ export default {
       currentTime,
       clockInTimeValue,
       clockOutTimeValue,
+      clockInTime,
+      clockOutTime,
       dayChangeTime,
       clockedIn,
       clockIn,
       clockOut,
       isHoliday,
       isLoading,
+      isProcessing,
     };
   },
 };

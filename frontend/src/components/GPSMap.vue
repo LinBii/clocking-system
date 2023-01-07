@@ -7,17 +7,17 @@
     <div v-else>
       <button
         v-if="!clockedIn"
-        :disabled="!withinRange || isHoliday"
+        :disabled="!withinRange || isHoliday || isProcessing"
         @click="clockIn"
-        class="mt-3 btn btn-outline-danger btn-circle"
+        class="mt-3 btn btn-danger btn-circle"
       >
         <p class="mb-0">打卡上班</p>
       </button>
       <button
         v-else-if="clockedIn"
-        :disabled="!withinRange || isHoliday"
+        :disabled="!withinRange || isHoliday || isProcessing"
         @click="clockOut"
-        class="mt-3 btn btn-outline-success btn-circle"
+        class="mt-3 btn btn-success btn-circle"
       >
         <p class="mb-0">打卡下班</p>
       </button>
@@ -53,6 +53,7 @@ export default {
     const distance = ref('?');
     const withinRange = ref(false);
     const isLoading = ref(true);
+    const isProcessing = ref(false);
 
     onMounted(async () => {
       await new Promise((resolve) => {
@@ -150,6 +151,8 @@ export default {
     localStorage.setItem('date', date.value);
 
     async function clockIn() {
+      isProcessing.value = true;
+
       clockInTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
       // date format in database is YYYY-MM-DD 00:00:00
       date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
@@ -195,6 +198,8 @@ export default {
         clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
+
+        isProcessing.value = false;
       } catch (error) {
         if (error.message === '今天已經打卡上班了！') {
           clockedIn.value = true;
@@ -212,10 +217,13 @@ export default {
             title: error.message,
           });
         }
+        isProcessing.value = false;
       }
     }
 
     async function clockOut() {
+      isProcessing.value = true;
+
       clockOutTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
       const hour = dayjs().hour();
@@ -258,6 +266,8 @@ export default {
         clockedIn.value = true;
         store.commit('setClockedIn', true);
         localStorage.setItem('clockedIn', true);
+
+        isProcessing.value = false;
       } catch (error) {
         if (error.message === 'Network Error') {
           Toast.fire({
@@ -270,6 +280,7 @@ export default {
             title: error.message,
           });
         }
+        isProcessing.value = false;
       }
     }
 
@@ -281,6 +292,7 @@ export default {
       clockIn,
       clockOut,
       clockedIn,
+      isProcessing,
     };
   },
 };
