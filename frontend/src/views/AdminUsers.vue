@@ -99,7 +99,7 @@ export default {
       } catch (error) {
         Toast.fire({
           icon: 'error',
-          title: '無法更新出缺勤狀態！',
+          title: error.response.data.message,
         });
       }
     }
