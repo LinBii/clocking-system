@@ -1,8 +1,13 @@
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+dayjs.extend(utc);
 const { User, Attendance } = require('../models');
 const { sendEmail } = require('./nodemailer');
 
-let date = dayjs().subtract(1, 'day').format('YYYY-MM-DD 00:00:00');
+let date = dayjs()
+  .utcOffset(8)
+  .subtract(1, 'day')
+  .format('YYYY-MM-DD 00:00:00');
 
 async function getTodayAbsentUsers(req, res, next) {
   const users = await User.findAll({
