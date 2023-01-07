@@ -10,6 +10,7 @@ const adminController = {
             attributes: ['name'],
           },
         ],
+        order: [['id', 'DESC']],
       });
       res.json(attendance);
     } catch (err) {
@@ -25,6 +26,7 @@ const adminController = {
             model: Attendance,
           },
         ],
+        order: [['id', 'ASC']],
       });
 
       res.json(users);
@@ -57,6 +59,11 @@ const adminController = {
     }
     try {
       const attendance = await Attendance.findByPk(req.params.id);
+      if (attendance.absent === false) {
+        return res
+          .status(409)
+          .json({ status: 'error', message: '這筆記錄並未缺勤！' });
+      }
       await attendance.update({ absent: false });
       return res.json({ status: 'success', message: '缺勤修改成功！' });
     } catch (err) {
@@ -66,6 +73,11 @@ const adminController = {
   unlockUser: async (req, res, next) => {
     try {
       const user = await User.findByPk(req.params.id);
+      if (user.isLocked === false) {
+        return res
+          .status(409)
+          .json({ status: 'error', message: '這位使用者並未上鎖！' });
+      }
       await user.update({ isLocked: false, wrongPasswordTimes: 0 });
       return res.json({ status: 'success', message: '使用者解鎖成功！' });
     } catch (err) {
