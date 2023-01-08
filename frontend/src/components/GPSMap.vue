@@ -45,27 +45,9 @@ dayjs.extend(utc, timezone);
 
 export default {
   setup() {
-    const mapContainer = ref('map');
-    const currentPosition = ref({ lat: '', long: '' });
-    const distance = ref('?');
-    const withinRange = ref(false);
-    const isLoading = ref(true);
-    const isProcessing = ref(false);
-
-    onMounted(async () => {
-      await new Promise((resolve) => {
-        navigator.geolocation.getCurrentPosition((position) => {
-          currentPosition.value.lat = position.coords.latitude;
-          currentPosition.value.long = position.coords.longitude;
-          resolve();
-        });
-      });
-      const companyPosition = {
-        lat: 25.039754,
-        long: 121.565205,
-      };
+    const initMap = (currentPosition, companyPosition) => {
       const map = L.map(mapContainer.value, {
-        center: [currentPosition.value.lat, currentPosition.value.long],
+        center: [currentPosition.lat, currentPosition.long],
         zoom: 16,
       });
 
@@ -99,12 +81,39 @@ export default {
       // mark company position (red)
       L.marker([companyPosition.lat, companyPosition.long], {
         icon: redIcon,
-      }).addTo(map);
+      })
+        .addTo(map)
+        .bindPopup('公司位置');
 
       // mark current position (blue)
-      L.marker([currentPosition.value.lat, currentPosition.value.long], {
+      L.marker([currentPosition.lat, currentPosition.long], {
         icon: blueIcon,
-      }).addTo(map);
+      })
+        .addTo(map)
+        .bindPopup('我的位置');
+    };
+
+    const mapContainer = ref('map');
+    const currentPosition = ref({ lat: '', long: '' });
+    const distance = ref('?');
+    const withinRange = ref(false);
+    const isLoading = ref(true);
+    const isProcessing = ref(false);
+
+    onMounted(async () => {
+      await new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition((position) => {
+          currentPosition.value.lat = position.coords.latitude;
+          currentPosition.value.long = position.coords.longitude;
+          resolve();
+        });
+      });
+      const companyPosition = {
+        lat: 25.039754,
+        long: 121.565205,
+      };
+
+      initMap(currentPosition.value, companyPosition);
 
       let latlong1 = L.latLng(
         currentPosition.value.lat,

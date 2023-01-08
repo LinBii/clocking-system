@@ -2,7 +2,7 @@
   <p>{{ errorText }}</p>
   <div class="stream">
     <h2 v-if="isProcessing" class="fw-bold mt-5">讀取中...</h2>
-    <qrcode-stream @init="onInit" @decode="onDecode"> </qrcode-stream>
+    <qrcode-stream v-else @init="onInit" @decode="onDecode"> </qrcode-stream>
   </div>
   <br />
 </template>
