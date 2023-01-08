@@ -2,8 +2,8 @@
   <div class="container py-5">
     <div class="text-center d-flex flex-column align-items-center">
       <h1 class="fw-bold">歡迎來到PUNCHIN考勤系統</h1>
-      <div v-if="isHoliday" class="my-3">今天放假，好好休息！</div>
-      <div v-if="!isHoliday" class="my-3">
+      <h3 v-if="isHoliday" class="my-3">今天放假，好好休息！</h3>
+      <div v-if="isHoliday" class="my-3">
         <button
           v-if="!clockedIn"
           @click="clockIn"
@@ -21,8 +21,8 @@
           <p class="mb-0">打卡下班</p>
         </button>
       </div>
-      <h2 v-if="isLoading" class="loading my-3">Is loading</h2>
-      <h2 v-else class="my-3">{{ currentTime }}</h2>
+      <h3 v-if="isLoading" class="loading my-3">Is loading</h3>
+      <h3 v-else class="my-3">{{ currentTime }}</h3>
       <div class="my-3">
         <p v-if="clockInTime">上班時間：{{ clockInTime }}</p>
         <p v-if="clockOutTime">下班時間：{{ clockOutTime }}</p>
@@ -122,7 +122,6 @@ export default {
         isProcessing.value = false;
       } catch (error) {
         if (error.message === '今天已經打卡上班了！') {
-          clockInTime.value = '';
           clockedIn.value = true;
           store.commit('setClockedIn', true);
           localStorage.setItem('clockedIn', true);
@@ -138,6 +137,7 @@ export default {
             title: error.message,
           });
         }
+        clockInTime.value = '';
         isProcessing.value = false;
       }
     }

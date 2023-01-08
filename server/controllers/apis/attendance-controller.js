@@ -1,5 +1,23 @@
 const { Attendance } = require('../../models');
 const dayjs = require('dayjs');
+const calendar = require('../../data/calendar.json');
+
+const filteredCalendar = () => {
+  return calendar.filter((entry) => entry.是否放假 === '2');
+};
+
+function isHoliday(date) {
+  filteredCalendar().some((entry) => {
+    const year = entry.西元日期.substring(0, 4);
+    const month = entry.西元日期.substring(4, 6);
+    const day = entry.西元日期.substring(6, 8);
+
+    const entryDate = dayjs(`${year}-${month}-${day}`).format(
+      'YYYY-MM-DD 00:00:00'
+    );
+    return date === entryDate;
+  });
+}
 
 let attendanceController = {
   postAttendance: async (req, res, next) => {
@@ -13,6 +31,12 @@ let attendanceController = {
       const date = dayjs().format('YYYY-MM-DD 00:00:00');
       if (date !== req.body.date) {
         return res.json({ status: 'error', message: '出勤日期不正確！' });
+      }
+      if (!isHoliday(date)) {
+        return res.json({
+          status: 'error',
+          message: '今天是放假日，無法打卡！',
+        });
       }
       const data = await Attendance.findOne({
         where: { date: req.body.date, UserId: req.body.userId },
@@ -40,6 +64,12 @@ let attendanceController = {
       const date = dayjs().format('YYYY-MM-DD 00:00:00');
       if (date !== req.body.date) {
         return res.json({ status: 'error', message: '出勤日期不正確！' });
+      }
+      if (!isHoliday(date)) {
+        return res.json({
+          status: 'error',
+          message: '今天是放假日，無法打卡！',
+        });
       }
       const data = await Attendance.findOne({
         where: { date: req.body.date, UserId: req.body.userId },
