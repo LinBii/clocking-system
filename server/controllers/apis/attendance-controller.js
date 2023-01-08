@@ -7,7 +7,7 @@ const filteredCalendar = () => {
 };
 
 function isHoliday(date) {
-  filteredCalendar().some((entry) => {
+  return filteredCalendar().some((entry) => {
     const year = entry.西元日期.substring(0, 4);
     const month = entry.西元日期.substring(4, 6);
     const day = entry.西元日期.substring(6, 8);
@@ -32,7 +32,7 @@ let attendanceController = {
       if (date !== req.body.date) {
         return res.json({ status: 'error', message: '出勤日期不正確！' });
       }
-      if (!isHoliday(date)) {
+      if (isHoliday(date)) {
         return res.json({
           status: 'error',
           message: '今天是放假日，無法打卡！',
@@ -65,7 +65,7 @@ let attendanceController = {
       if (date !== req.body.date) {
         return res.json({ status: 'error', message: '出勤日期不正確！' });
       }
-      if (!isHoliday(date)) {
+      if (isHoliday(date)) {
         return res.json({
           status: 'error',
           message: '今天是放假日，無法打卡！',
