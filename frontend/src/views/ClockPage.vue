@@ -3,7 +3,7 @@
     <div class="text-center d-flex flex-column align-items-center">
       <h1 class="fw-bold">歡迎來到PUNCHIN考勤系統</h1>
       <h3 v-if="isHoliday" class="my-3">今天放假，好好休息！</h3>
-      <div v-if="isHoliday" class="my-3">
+      <div v-if="!isHoliday" class="my-3">
         <button
           v-if="!clockedIn"
           @click="clockIn"
@@ -74,9 +74,6 @@ export default {
 
       clockInTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
-      // date format in database is YYYY-MM-DD 00:00:00
-      date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
-
       dayChangeTime.value = dayjs(date.value)
         .add(1, 'day')
         .format('YYYY-MM-DD 05:00:00');
@@ -91,6 +88,7 @@ export default {
           .subtract(1, 'day')
           .format('YYYY-MM-DD 00:00:00');
       } else {
+        // date format in database is YYYY-MM-DD 00:00:00
         date.value = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
       }
 
