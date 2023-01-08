@@ -1,34 +1,31 @@
 <template>
-  <div class="text-center container">
-    <h1 class="fw-bold">GPS 打卡</h1>
-    <div v-if="isLoading" class="my-3 fw-bold">
-      允許取得位置後，才能進行GPS打卡！
-    </div>
-    <div v-else>
-      <button
-        v-if="!clockedIn"
-        :disabled="!withinRange || isHoliday || isProcessing"
-        @click="clockIn"
-        class="mt-3 btn btn-danger btn-circle"
-      >
-        <p class="mb-0">打卡上班</p>
-      </button>
-      <button
-        v-else-if="clockedIn"
-        :disabled="!withinRange || isHoliday || isProcessing"
-        @click="clockOut"
-        class="mt-3 btn btn-success btn-circle"
-      >
-        <p class="mb-0">打卡下班</p>
-      </button>
-      <div class="my-3 fw-bold">
-        距離公司 {{ distance }} 公尺，
-        <p v-if="withinRange">在範圍內，可以打卡！</p>
-        <p v-else>超出範圍，無法打卡！</p>
-      </div>
-    </div>
-    <div id="map" ref="mapContainer"></div>
+  <div v-if="isLoading" class="my-3 fw-bold">
+    允許取得位置後，才能進行GPS打卡！
   </div>
+  <div v-else>
+    <button
+      v-if="!clockedIn"
+      :disabled="!withinRange || isHoliday || isProcessing"
+      @click="clockIn"
+      class="mt-3 btn btn-danger btn-circle"
+    >
+      <p class="mb-0">打卡上班</p>
+    </button>
+    <button
+      v-else-if="clockedIn"
+      :disabled="!withinRange || isHoliday || isProcessing"
+      @click="clockOut"
+      class="mt-3 btn btn-success btn-circle"
+    >
+      <p class="mb-0">打卡下班</p>
+    </button>
+    <div class="my-3 fw-bold">
+      距離公司 {{ distance }} 公尺，
+      <p v-if="withinRange">在範圍內，可以打卡！</p>
+      <p v-else>超出範圍，無法打卡！</p>
+    </div>
+  </div>
+  <div id="map" ref="mapContainer"></div>
 </template>
 
 <script>
