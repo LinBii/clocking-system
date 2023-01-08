@@ -1,18 +1,20 @@
 <template>
   <main>
     <div class="container py-5">
-      <div v-if="isHoliday" class="text-center">
-        <h1>今天放假，好好休息！</h1>
-      </div>
-      <div v-else class="text-center">
+      <div class="text-center">
         <h1 class="fw-bold">QR Code 打卡</h1>
-        <p class="my-3 fw-bold">必須允許使用攝影機才能使用QR Code打卡！</p>
-        <div v-if="currentUser.role === 'admin'">
-          <a href="#/clocking/qrcode/generate">產生QR Code</a>
-          | <a href="#/clocking/qrcode/read">讀取QR Code</a>
+        <div v-if="isHoliday" class="mt-3">
+          <h3>今天放假，好好休息！</h3>
         </div>
-        <div>
-          <component :is="currentView" />
+        <div v-else>
+          <p class="my-3 fw-bold">必須允許使用攝影機才能使用QR Code打卡！</p>
+          <div v-if="currentUser.role === 'admin'">
+            <a href="#/clocking/qrcode/generate">產生QR Code</a>
+            | <a href="#/clocking/qrcode/read">讀取QR Code</a>
+          </div>
+          <div>
+            <component :is="currentView" />
+          </div>
         </div>
       </div>
     </div>
