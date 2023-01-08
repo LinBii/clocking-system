@@ -4,12 +4,13 @@ dayjs.extend(utc);
 const { User, Attendance } = require('../models');
 const { sendEmail } = require('./nodemailer');
 
-let date = dayjs()
-  .utcOffset(8)
-  .subtract(1, 'day')
-  .format('YYYY-MM-DD 00:00:00');
+async function getYesterdayAbsentUsers(req, res, next) {
+  // Set the date at the timezone of GMT+8, subtract 1 day because the mail offers yesterday's absent users' information
+  let date = dayjs()
+    .utcOffset(8)
+    .subtract(1, 'day')
+    .format('YYYY-MM-DD 00:00:00');
 
-async function getTodayAbsentUsers(req, res, next) {
   const users = await User.findAll({
     include: [
       {
@@ -45,11 +46,11 @@ async function sendAbsentUserEmail() {
       mailList.push(adminEmail.email);
     }
 
-    date = dayjs(date).format('YYYY-MM-DD');
+    let date = dayjs().utcOffset(8).subtract(1, 'day').format('YYYY-MM-DD');
 
-    const mailSubject = `${date}缺勤名單通知`;
+    const mailSubject = `${date}的缺勤名單通知`;
 
-    const absentUsers = await getTodayAbsentUsers();
+    const absentUsers = await getYesterdayAbsentUsers();
 
     let mailText = '';
 
