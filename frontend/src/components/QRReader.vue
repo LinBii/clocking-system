@@ -120,7 +120,7 @@ export default {
       } else {
         isProcessing.value = true;
 
-        clockOutTime.value = dayjs.utc().local();
+        clockOutTime.value = dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
 
         const hour = dayjs().hour();
 
