@@ -81,14 +81,13 @@ export default {
       const resFuc = storeState[item];
       resultStoreState[item] = computed(resFuc.bind({ $store: store }));
     });
-    const { currentUser, isAuthenticated } = { ...resultStoreState };
 
     function logout() {
       store.commit('revokeAuthentication');
       router.push('/signin');
       localStorage.clear();
     }
-    return { logout, currentUser, isAuthenticated };
+    return { logout, ...resultStoreState };
   },
 };
 </script>
