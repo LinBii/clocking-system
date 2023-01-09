@@ -55,22 +55,26 @@ export default {
           isProcessing.value = true;
 
           clockInTime.value = dayjs.utc().local();
-          dayChangeTime.value = dayjs(object.date)
-            .add(1, 'day')
-            .format('YYYY-MM-DD 05:00:00');
 
           const hour = dayjs().hour();
 
           // When the clock in time is between 00:00 ~ 05:00, the date value would be considered as the day before
           if (hour >= 0 && hour < 5) {
-            object.date = dayjs
+            object.date = dayjs(object.date)
               .utc()
               .local()
               .subtract(1, 'day')
               .format('YYYY-MM-DD 00:00:00');
           } else {
-            object.date = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+            object.date = dayjs(object.date)
+              .utc()
+              .local()
+              .format('YYYY-MM-DD 00:00:00');
           }
+
+          dayChangeTime.value = dayjs(object.date)
+            .add(1, 'day')
+            .format('YYYY-MM-DD 05:00:00');
 
           const { data } = await attendanceAPI.create({
             userId,
@@ -126,13 +130,16 @@ export default {
 
         // When the clock out time is between 00:00 ~ 05:00, the date value would be considered as the day before
         if (hour >= 0 && hour < 5) {
-          object.date = dayjs
+          object.date = dayjs(object.date)
             .utc()
             .local()
             .subtract(1, 'day')
             .format('YYYY-MM-DD 00:00:00');
         } else {
-          object.date = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+          object.date = dayjs(object.date)
+            .utc()
+            .local()
+            .format('YYYY-MM-DD 00:00:00');
         }
 
         // Set the clockOutTime ref to the current time, if it is later than the current value
