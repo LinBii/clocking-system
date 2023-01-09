@@ -1,6 +1,10 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc, timezone);
+
 import calendar from './../data/calendar.json';
 
 const baseURL = 'https://punchin-serv.herokuapp.com';
@@ -36,7 +40,18 @@ const filteredCalendar = () => {
   return calendar.filter((entry) => entry.是否放假 === '2');
 };
 
-const date = localStorage.getItem('date');
+const getCurrentDate = () => {
+  const date = localStorage.getItem('date');
+  if (date) {
+    return date;
+  } else {
+    const currentDate = dayjs.utc().local().format('YYYY-MM-DD 00:00:00');
+    localStorage.setItem('date', currentDate);
+    return currentDate;
+  }
+};
+
+const date = getCurrentDate();
 
 export const isHoliday = filteredCalendar().some((entry) => {
   const year = entry.西元日期.substring(0, 4);
