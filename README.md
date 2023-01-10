@@ -98,13 +98,27 @@ PUNCHIN 乓去映 是一個使用 Vue 3、Node.js 及 MySQL 打造出的考勤�
    npm install
    ```
 
-3. 創建資料庫（建議使用 MySQL Workbench）
+3. 創建資料庫（建議使用 MySQL Workbench）。若選擇不同的資料庫名字，請在.env.example 的 DB_DATABASE 進行調整
 
    ```
    create database punchin_sequelize;
    ```
 
-4. 調整.env 環境變數
+4. 將.env.example 的.example 去掉，調整.env 環境變數
+
+   AUTH_EMAIL：請設定自己想要使用的寄信 email（請使用 Gmail 帳號）。目前通知信件除了 admin 的 email，也會寄給 AUTH_EMAIL。
+
+   AUTH_PASSWORD：注意這裡並不是直接使用 Gmail 的密碼，而是要使用專用的一組「應用程式密碼」。
+
+   應用程式密碼申請步驟：
+
+   1. 使用的 Gmail 帳號必須啟用「兩步驟驗證」。
+
+   2. 啟用後進入自己 Gmail 的對應 Google 帳戶，點選「安全性」。
+
+   3. 找到「登入 Google」卡片，選擇「應用程式密碼」。
+
+   4. 在選取應用程式中選擇「其他(自訂名稱)」，產生專用的應用程式密碼。
 
 5. 建立 migration
 
