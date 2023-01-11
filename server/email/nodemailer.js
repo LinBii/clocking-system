@@ -20,7 +20,6 @@ const sendEmail = (mailList, mailSubject, mailText) => {
 
     transporter.sendMail(mailConfigs, function (error, info) {
       if (error) {
-        console.log(error);
         return reject({ message: 'An error has occured' });
       }
       return resolve({ message: 'Email sent successfully' });
